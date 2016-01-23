@@ -17,12 +17,17 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"time"
 )
 
 func retrieveNonce(clientConn net.UDPConn, aserverUDPAddr *net.UDPAddr) common.NonceMessage {
 	//Send arbitrary UDP message to aserver to get nonce
 	nonceReq := []byte("Hello aserver!  I'd like a nonce!")
 	_, err := clientConn.WriteToUDP(nonceReq, aserverUDPAddr)
+	if err != nil {
+		fmt.Println("Error writing to aserver: ", err)
+		os.Exit(-1)
+	}
 
 	//Receive NonceMessage reply
 	var buf [1024]byte
@@ -77,6 +82,9 @@ func main() {
 
 	clientConn := common.InitUDPConn(clientIpPort)
 	aserverUDPAddr := common.ResolveUDPAddr(aserverIpPort)
+
+	//Set 10 second timeout for ReadFromUDP
+	clientConn.SetReadDeadline(time.Now().Add(10 * time.Second))
 
 	//Retrieve nonce from aserver and compute MD5(nonce + secret)
 	fmt.Println("Retrieving nonce from aserver")
