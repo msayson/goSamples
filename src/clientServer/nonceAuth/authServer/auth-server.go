@@ -1,14 +1,12 @@
 /*
 Authentication Server
 
-$ go run auth-server.go [server UDP ip:port] [secret]
-
-Local PC:
-go install clientServer/nonceAuth/authServer
-"bin/authServer" localhost:15432 123456
+Usage:
+1. Import the aserver package
+2. Call authServer.RunAuthServer(udpIpPort string, secret int64)
 */
 
-package main
+package authServer
 
 import (
 	"clientServer/nonceAuth/common"
@@ -20,13 +18,13 @@ import (
 	"sync"
 )
 
-type ConcurrentMap struct {
+type concurrentMap struct {
 	sync.RWMutex
 	m map[string]int64
 }
 
 //Generate new nonce for udpAddr and add to nonceMap
-func generateNewNonce(udpAddr *net.UDPAddr, nonceMap ConcurrentMap) int64 {
+func generateNewNonce(udpAddr *net.UDPAddr, nonceMap concurrentMap) int64 {
 	nonce := rand.Int63()
 	nonceMap.Lock()
 	nonceMap.m[udpAddr.String()] = nonce
@@ -34,7 +32,7 @@ func generateNewNonce(udpAddr *net.UDPAddr, nonceMap ConcurrentMap) int64 {
 	return nonce
 }
 
-func sendNewNonce(conn net.UDPConn, clientUDPAddr *net.UDPAddr, nonceMap ConcurrentMap) {
+func sendNewNonce(conn net.UDPConn, clientUDPAddr *net.UDPAddr, nonceMap concurrentMap) {
 	nonce := generateNewNonce(clientUDPAddr, nonceMap)
 
 	nonceMsg := common.NonceMessage{nonce}
@@ -79,7 +77,7 @@ func isValidHashMessage(received common.HashMessage, storedNonce int64, secret i
 	return expected == received
 }
 
-func handleUDPConn(conn net.UDPConn, clientUDPAddr *net.UDPAddr, nonceMap ConcurrentMap, secret int64, msgFromClient []byte) {
+func handleUDPConn(conn net.UDPConn, clientUDPAddr *net.UDPAddr, nonceMap concurrentMap, secret int64, msgFromClient []byte) {
 	nonceMap.RLock()
 	clientNonce := nonceMap.m[clientUDPAddr.String()]
 	nonceMap.RUnlock()
@@ -100,19 +98,11 @@ func handleUDPConn(conn net.UDPConn, clientUDPAddr *net.UDPAddr, nonceMap Concur
 	}
 }
 
-func main() {
-	args := os.Args
-	if len(args) != 3 {
-		fmt.Println("Usage: [server UDP ip:port] [secret]")
-		os.Exit(-1)
-	}
-	aserverUDPIpPort := args[1]
-	secret := common.ParseIntFromStr(args[2])
-
-	udpConn := common.InitUDPConn(aserverUDPIpPort)
+func RunAuthServer(udpIpPort string, secret int64) {
+	udpConn := common.InitUDPConn(udpIpPort)
 
 	//Initialize hash table of (udpIpPort, nonce) key-value pairs
-	var nonceMap ConcurrentMap
+	var nonceMap concurrentMap
 	nonceMap.m = make(map[string]int64)
 
 	//Start listen/receive connection loop

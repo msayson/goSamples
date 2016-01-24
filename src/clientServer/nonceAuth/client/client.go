@@ -2,14 +2,11 @@
 Client
 
 Usage:
-$ go run client.go [local UDP ip:port] [aserver UDP ip:port] [secret]
-
-Local PC:
-go install clientServer/nonceAuth/client
-"bin/client" localhost:16543 localhost:15432 123456
+1. Import the client package
+2. Call client.RunClient(clientIpPort string, aserverIpPort string, secret int64)
 */
 
-package main
+package client
 
 import (
 	"clientServer/nonceAuth/common"
@@ -70,16 +67,7 @@ func retrieveGoalMsg(clientConn net.UDPConn, aserverUDPAddr *net.UDPAddr, hashMs
 	return goalMsg
 }
 
-func main() {
-	args := os.Args //os.Args[0] is program name
-	if len(args) != 4 {
-		fmt.Println("Usage: client [local UDP ip:port] [aserver UDP ip:port] [secret]")
-		os.Exit(-1)
-	}
-	clientIpPort := args[1]
-	aserverIpPort := args[2]
-	secret := common.ParseIntFromStr(args[3])
-
+func RunClient(clientIpPort string, aserverIpPort string, secret int64) {
 	clientConn := common.InitUDPConn(clientIpPort)
 	aserverUDPAddr := common.ResolveUDPAddr(aserverIpPort)
 
