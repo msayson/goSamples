@@ -75,14 +75,11 @@ func RunClient(clientIpPort string, aserverIpPort string, secret int64) {
 	clientConn.SetReadDeadline(time.Now().Add(10 * time.Second))
 
 	//Retrieve nonce from aserver and compute MD5(nonce + secret)
-	fmt.Println("Retrieving nonce from aserver")
 	nonceMsg := RetrieveNonce(clientConn, &aserverUDPAddr)
-	fmt.Println("Received reply from aserver:", nonceMsg)
 
 	hashMsg := common.ComputeHashMessage(nonceMsg.Nonce, secret)
 
 	//Retrieve GoalMessage from aserver
-	fmt.Println("Sending hash to aserver")
 	goalMsg := RetrieveGoalMsg(clientConn, &aserverUDPAddr, hashMsg)
 	fmt.Println("Received goal message from aserver: ", goalMsg)
 }
