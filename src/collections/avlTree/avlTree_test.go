@@ -227,6 +227,12 @@ func verifyTreeRotateLeft_Empty(t *testing.T, tree *AvlTree) {
 	verifyTreeNodesEqual(t, tree, prevTree)
 }
 
+func verifyTreeRotateRight_Empty(t *testing.T, tree *AvlTree) {
+	prevTree := tree
+	tree.rotateRight()
+	verifyTreeNodesEqual(t, tree, prevTree)
+}
+
 func verifyTreeNodesEqual(t *testing.T, tree *AvlTree, expected *AvlTree) {
 	if tree != expected {
 		if tree == nil {
@@ -254,10 +260,29 @@ func testTreeRotateLeft_EmptyTree(t *testing.T) {
 	verifyTreeRotateLeft_Empty(t, emptyTree)
 }
 
+func testTreeRotateRight_EmptyTree(t *testing.T) {
+	verifyTreeRotateRight_Empty(t, nil)
+
+	var nilTree AvlTree
+	verifyTreeRotateRight_Empty(t, &nilTree)
+
+	emptyTree := newAvlTree()
+	verifyTreeRotateRight_Empty(t, emptyTree)
+}
+
 func testTreeRotateLeft_Leaf(t *testing.T) {
 	leaf := createAvlTree_Leaf("a", 1)
 	prevLeafVal := *leaf
 	leaf.rotateLeft()
+	if *leaf != prevLeafVal {
+		t.Errorf("tree == &%v, expected &%v", *leaf, prevLeafVal)
+	}
+}
+
+func testTreeRotateRight_Leaf(t *testing.T) {
+	leaf := createAvlTree_Leaf("a", 1)
+	prevLeafVal := *leaf
+	leaf.rotateRight()
 	if *leaf != prevLeafVal {
 		t.Errorf("tree == &%v, expected &%v", *leaf, prevLeafVal)
 	}
@@ -274,17 +299,44 @@ func testTreeRotateLeft_ParentWithNoLeft(t *testing.T) {
 	}
 }
 
+func testTreeRotateRight_ParentWithNoRight(t *testing.T) {
+	left := createAvlTree_Leaf("left", 2)
+	parent := createAvlTreeWithHeight("parent", 5, 1, left, nil)
+	prevParentVal := *parent
+	parent.rotateRight()
+	if *parent != prevParentVal {
+		t.Errorf("tree == &%v, expected &%v", *parent, prevParentVal)
+	}
+}
+
 func testTreeRotateLeft_ParentWithLAndR(t *testing.T) {
 	left := createAvlTree_Leaf("left", 0)
 	right := createAvlTree_Leaf("right", 2)
-	parentNode := createAvlNode("parent", 1)
-	parent := createAvlTree(parentNode, left, right)
+	parent := createAvlTreeWithHeight("parent", 1, 1, left, right)
+	prevLR := left.right
 	parent.rotateLeft()
 
-	verifyTreeLAndR(t, parent, left.left, right)
+	verifyTreeLAndR(t, parent, prevLR, right)
 	verifyTreeLAndR(t, left, nil, parent)
 	if left.height != 2 {
 		t.Errorf("left.height == %d, expected 1", left.height)
+	}
+	if parent.height != 1 {
+		t.Errorf("parent.height == %d, expected 0", parent.height)
+	}
+}
+
+func testTreeRotateRight_ParentWithLAndR(t *testing.T) {
+	left := createAvlTree_Leaf("left", 0)
+	right := createAvlTree_Leaf("right", 2)
+	parent := createAvlTreeWithHeight("parent", 1, 1, left, right)
+	prevRL := right.left
+	parent.rotateRight()
+
+	verifyTreeLAndR(t, parent, left, prevRL)
+	verifyTreeLAndR(t, right, parent, nil)
+	if right.height != 2 {
+		t.Errorf("right.height == %d, expected 1", right.height)
 	}
 	if parent.height != 1 {
 		t.Errorf("parent.height == %d, expected 0", parent.height)
@@ -313,12 +365,42 @@ func testTreeRotateLeft_LongLeftTail(t *testing.T) {
 	}
 }
 
+func testTreeRotateRight_LongRightTail(t *testing.T) {
+	tR4 := createAvlTree_Leaf("RRRR", 25)
+	tR3 := createAvlTreeWithHeight("RRR", 20, 1, nil, tR4)
+	tR2 := createAvlTreeWithHeight("RR", 15, 2, nil, tR3)
+	tRL := createAvlTree_Leaf("R", 5)
+	tR := createAvlTreeWithHeight("R", 10, 3, tRL, tR2)
+	tL := createAvlTree_Leaf("L", -10)
+	root := createAvlTreeWithHeight("root", 0, 4, tL, tR)
+	root.rotateRight()
+
+	verifyTreeLAndR(t, root, tL, tRL)
+	verifyTreeLAndR(t, tR, root, tR2)
+	expectedRightHeight := 3
+	if tR.height != expectedRightHeight {
+		t.Errorf("right.height == %d, expected %d", tR.height, expectedRightHeight)
+	}
+	expectedRootHeight := 1
+	if root.height != expectedRootHeight {
+		t.Errorf("root.height == %d, expected %d", root.height, expectedRootHeight)
+	}
+}
+
 func TestTreeRotateLeft(t *testing.T) {
 	testTreeRotateLeft_EmptyTree(t)
 	testTreeRotateLeft_Leaf(t)
 	testTreeRotateLeft_ParentWithNoLeft(t)
 	testTreeRotateLeft_ParentWithLAndR(t)
 	testTreeRotateLeft_LongLeftTail(t)
+}
+
+func TestTreeRotateRight(t *testing.T) {
+	testTreeRotateRight_EmptyTree(t)
+	testTreeRotateRight_Leaf(t)
+	testTreeRotateRight_ParentWithNoRight(t)
+	testTreeRotateRight_ParentWithLAndR(t)
+	testTreeRotateRight_LongRightTail(t)
 }
 
 func testMax_DiffVals(t *testing.T) {

@@ -107,7 +107,6 @@ func (tree *AvlTree) balance() {
 }
 
 //Graphical representation of t.rotateLeft():
-//       *                    *
 //       t                   tL
 //   tL     tR     ->    tLL     t
 //tLL tLR                      tLR tR
@@ -125,15 +124,31 @@ func (tree *AvlTree) rotateLeft() {
 	}
 }
 
-//TODO
+//Graphical representation of t.rotateLeft():
+//       t                   tR
+//   tL     tR     ->     t     tRR
+//        tRL tRR       tL tRL
 func (tree *AvlTree) rotateRight() {
+	if tree.isEmpty() {
+		return
+	}
+	prevRight := tree.right
+	if prevRight != nil {
+		tree.right = prevRight.left
+		prevRight.left = tree
+		tree.updateHeight()
+		prevRight.updateHeight()
+		tree = prevRight
+	}
 }
 
+//TODO: guard against tree.left == nil?
 func (tree *AvlTree) doubleRotateLeft() {
 	tree.left.rotateRight()
 	tree.rotateLeft()
 }
 
+//TODO: guard against tree.right == nil?
 func (tree *AvlTree) doubleRotateRight() {
 	tree.right.rotateLeft()
 	tree.rotateRight()
