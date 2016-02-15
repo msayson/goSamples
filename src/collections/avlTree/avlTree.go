@@ -106,11 +106,11 @@ func (tree *AvlTree) getHeight() int {
 func (tree *AvlTree) balance() {
 }
 
-//Graphical representation of t.rotateLeft():
+//Graphical representation of t.rotateLeftToRoot():
 //       t                   tL
 //   tL     tR     ->    tLL     t
 //tLL tLR                      tLR tR
-func (tree *AvlTree) rotateLeft() {
+func (tree *AvlTree) rotateLeftToRoot() {
 	if tree.isEmpty() {
 		return
 	}
@@ -124,11 +124,11 @@ func (tree *AvlTree) rotateLeft() {
 	}
 }
 
-//Graphical representation of t.rotateLeft():
+//Graphical representation of t.rotateLeftToRoot():
 //       t                   tR
 //   tL     tR     ->     t     tRR
 //        tRL tRR       tL tRL
-func (tree *AvlTree) rotateRight() {
+func (tree *AvlTree) rotateRightToRoot() {
 	if tree.isEmpty() {
 		return
 	}
@@ -144,14 +144,14 @@ func (tree *AvlTree) rotateRight() {
 
 //TODO: guard against tree.left == nil?
 func (tree *AvlTree) doubleRotateLeft() {
-	tree.left.rotateRight()
-	tree.rotateLeft()
+	tree.left.rotateRightToRoot()
+	tree.rotateLeftToRoot()
 }
 
 //TODO: guard against tree.right == nil?
 func (tree *AvlTree) doubleRotateRight() {
-	tree.right.rotateLeft()
-	tree.rotateRight()
+	tree.right.rotateLeftToRoot()
+	tree.rotateRightToRoot()
 }
 
 func (tree *AvlTree) isEmpty() bool {
