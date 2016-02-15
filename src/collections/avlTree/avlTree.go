@@ -1,7 +1,6 @@
 package avlTree
 
 import (
-	// "fmt" //XXX
 	"sync"
 )
 
@@ -68,9 +67,9 @@ func (tree *AvlTree) insertInChild(node *avlNode) {
 }
 
 func (tree *AvlTree) updateHeightAndBalance() {
-	prevHeight := getHeight(tree)
+	prevHeight := tree.getHeight()
 	tree.updateHeight()
-	newHeight := getHeight(tree)
+	newHeight := tree.getHeight()
 	if newHeight != prevHeight {
 		tree.balance()
 	}
@@ -90,13 +89,13 @@ func (tree *AvlTree) calcHeightFromChildren() int {
 	if tree.isEmpty() {
 		return -1
 	}
-	leftHeight := getHeight(tree.left)
-	rightHeight := getHeight(tree.right)
+	leftHeight := tree.left.getHeight()
+	rightHeight := tree.right.getHeight()
 	maxChildHeight := max(leftHeight, rightHeight)
 	return maxChildHeight + 1
 }
 
-func getHeight(tree *AvlTree) int {
+func (tree *AvlTree) getHeight() int {
 	if tree.isEmpty() {
 		return -1
 	}
@@ -107,8 +106,55 @@ func getHeight(tree *AvlTree) int {
 func (tree *AvlTree) balance() {
 }
 
+//Graphical representation of t.rotateLeft():
+//       *                    *
+//       t                   tL
+//   tL     tR     ->    tLL     t
+//tLL tLR                      tLR tR
+func (tree *AvlTree) rotateLeft() {
+	if tree.isEmpty() {
+		return
+	}
+	prevLeft := tree.left
+	if prevLeft != nil {
+		tree.left = prevLeft.right
+		prevLeft.right = tree
+		tree.updateHeight()
+		prevLeft.updateHeight()
+		tree = prevLeft
+	}
+}
+
+//TODO
+func (tree *AvlTree) rotateRight() {
+}
+
+func (tree *AvlTree) doubleRotateLeft() {
+	tree.left.rotateRight()
+	tree.rotateLeft()
+}
+
+func (tree *AvlTree) doubleRotateRight() {
+	tree.right.rotateLeft()
+	tree.rotateRight()
+}
+
 func (tree *AvlTree) isEmpty() bool {
 	return tree == nil || tree.root == nil
+}
+
+func getTreeLeft(tree *AvlTree) *AvlTree {
+	if tree == nil {
+		return nil
+	}
+	return tree.left
+}
+
+func getTreeRight(tree *AvlTree) *AvlTree {
+	if tree == nil {
+		return nil
+	}
+	return tree.right
 }
 
 //Return max of two ints
