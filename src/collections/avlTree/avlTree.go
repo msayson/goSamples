@@ -1,6 +1,7 @@
 package avlTree
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -102,17 +103,38 @@ func (tree *AvlTree) getHeight() int {
 	return tree.height
 }
 
-//TODO
 func (tree *AvlTree) balance() {
+	if tree == nil {
+		return
+	}
+	tree.left.balance()
+	tree.right.balance()
+	currBalance := tree.left.getHeight() - tree.right.getHeight()
+	if currBalance > 1 {
+		if tree.left.left.getHeight() > tree.left.right.getHeight() {
+			tree = tree.rotateLeftToRoot()
+		} else {
+			tree.doubleRotateLeftToRoot()
+		}
+	} else if currBalance < -1 {
+		if tree.right.right.getHeight() > tree.right.left.getHeight() {
+			tree = tree.rotateRightToRoot()
+		} else {
+			tree.doubleRotateRightToRoot()
+		}
+	}
 }
 
+//Returns pointer to tree with left branch rotated to root
+//Example of use: tree = tree.rotateLeftToRoot()
+//
 //Graphical representation of t.rotateLeftToRoot():
 //       t                   tL
 //   tL     tR     ->    tLL     t
 //tLL tLR                      tLR tR
-func (tree *AvlTree) rotateLeftToRoot() {
+func (tree *AvlTree) rotateLeftToRoot() *AvlTree {
 	if tree.isEmpty() {
-		return
+		return tree
 	}
 	prevLeft := tree.left
 	if prevLeft != nil {
@@ -122,36 +144,48 @@ func (tree *AvlTree) rotateLeftToRoot() {
 		prevLeft.updateHeight()
 		tree = prevLeft
 	}
+	return tree
 }
 
-//Graphical representation of t.rotateLeftToRoot():
+//Returns pointer to tree with right branch rotated to root
+//Example of use: tree = tree.rotateRightToRoot()
+//
+//Graphical representation of t.rotateRightToRoot():
 //       t                   tR
 //   tL     tR     ->     t     tRR
 //        tRL tRR       tL tRL
-func (tree *AvlTree) rotateRightToRoot() {
+func (tree *AvlTree) rotateRightToRoot() *AvlTree {
 	if tree.isEmpty() {
-		return
+		return tree
 	}
 	prevRight := tree.right
-	if prevRight != nil {
+	if !prevRight.isEmpty() {
 		tree.right = prevRight.left
 		prevRight.left = tree
 		tree.updateHeight()
 		prevRight.updateHeight()
 		tree = prevRight
 	}
+	return tree
 }
 
-//TODO: guard against tree.left == nil?
-func (tree *AvlTree) doubleRotateLeft() {
-	tree.left.rotateRightToRoot()
-	tree.rotateLeftToRoot()
+//Graphical representation of t.doubleRotateLeftToRoot():
+//          t                        t                     LR
+//     L         R             LR         R           L          T
+// LL    LR          ->     L     LRR         ->   LL  LRL    LRR  R
+//     LRL LRR           LL  LRL
+func (tree *AvlTree) doubleRotateLeftToRoot() {
+	if tree != nil && tree.left != nil && !tree.left.right.isEmpty() {
+		tree.left = tree.left.rotateRightToRoot()
+		tree = tree.rotateLeftToRoot()
+	}
 }
 
-//TODO: guard against tree.right == nil?
-func (tree *AvlTree) doubleRotateRight() {
-	tree.right.rotateLeftToRoot()
-	tree.rotateRightToRoot()
+func (tree *AvlTree) doubleRotateRightToRoot() {
+	if tree != nil && tree.right != nil && tree.right.left != nil {
+		tree.right = tree.right.rotateLeftToRoot()
+		tree = tree.rotateRightToRoot()
+	}
 }
 
 func (tree *AvlTree) isEmpty() bool {
@@ -170,6 +204,16 @@ func getTreeRight(tree *AvlTree) *AvlTree {
 		return nil
 	}
 	return tree.right
+}
+
+func debug_printTree(tree *AvlTree, prefix string) {
+	if tree == nil {
+		fmt.Println(prefix + ": AvlTree<nil>")
+	} else if !tree.isEmpty() {
+		fmt.Printf(prefix+": %v\n  root: %v\n", tree, tree.root)
+		debug_printTree(tree.left, prefix+".left")
+		debug_printTree(tree.right, prefix+".right")
+	}
 }
 
 //Return max of two ints
