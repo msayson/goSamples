@@ -200,20 +200,6 @@ func (tree *AvlTree) isEmpty() bool {
 	return tree == nil || tree.root == nil
 }
 
-func getTreeLeft(tree *AvlTree) *AvlTree {
-	if tree == nil {
-		return nil
-	}
-	return tree.left
-}
-
-func getTreeRight(tree *AvlTree) *AvlTree {
-	if tree == nil {
-		return nil
-	}
-	return tree.right
-}
-
 func debug_printTree(tree *AvlTree, prefix string) {
 	if tree == nil {
 		fmt.Println(prefix + ": AvlTree<nil>")

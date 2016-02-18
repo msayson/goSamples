@@ -665,6 +665,64 @@ func testTreeBalance_Empty(t *testing.T) {
 	verifyTreeBalanceHasNoEffect(t, emptyTree)
 }
 
+func testTreeBalance_BalancesIn1LftRtt(t *testing.T) {
+	leftL := createAvlTree_Leaf("LL", -3)
+	left := createAvlTreeWithHeight("L", -1, 1, leftL, nil)
+	tree := createAvlTreeWithHeight("root", 2, 2, left, nil)
+	prevTree := &*tree
+
+	balance(&tree)
+	verifyTreeNodesEqual(t, tree, left)
+	verifyTreeLAndR(t, tree, leftL, prevTree)
+	verifyTreeLAndR(t, prevTree, nil, nil)
+	verifyTreeLAndR(t, leftL, nil, nil)
+	verifyGetHeightVal(t, tree, 1)
+	verifyGetHeightVal(t, prevTree, 0)
+	verifyGetHeightVal(t, leftL, 0)
+}
+
+func testTreeBalance_BalancesIn1RghtRtt(t *testing.T) {
+	rightR := createAvlTree_Leaf("RR", 3)
+	right := createAvlTreeWithHeight("R", 1, 1, nil, rightR)
+	tree := createAvlTreeWithHeight("root", -1, 2, nil, right)
+	prevTree := &*tree
+
+	balance(&tree)
+	verifyTreeNodesEqual(t, tree, right)
+	verifyTreeLAndR(t, tree, prevTree, rightR)
+	verifyTreeLAndR(t, prevTree, nil, nil)
+	verifyTreeLAndR(t, rightR, nil, nil)
+	verifyGetHeightVal(t, tree, 1)
+	verifyGetHeightVal(t, prevTree, 0)
+	verifyGetHeightVal(t, rightR, 0)
+}
+
+//          t                        t                     LR
+//     L         R             LR         R           L          t
+// LL    LR          ->     L     LRR         ->   LL  LRL    LRR  R
+//     LRL LRR           LL  LRL
+func testTreeBalance_BalancesIn1DblLftRtt(t *testing.T) {
+	leftL := createAvlTree_Leaf("LL", -15)
+	leftRL := createAvlTree_Leaf("LRL", -5)
+	leftRR := createAvlTree_Leaf("LRR", -1)
+	leftR := createAvlTreeWithHeight("LR", -3, 1, leftRL, leftRR)
+	left := createAvlTreeWithHeight("L", -10, 2, leftL, leftR)
+	right := createAvlTree_Leaf("R", 10)
+	tree := createAvlTreeWithHeight("T", 5, 3, left, right)
+	prevTree := &*tree
+
+	balance(&tree)
+	if tree != leftR {
+		t.Errorf("tree == %v, expected %v", tree, leftR)
+	}
+	verifyTreeLAndR(t, tree, left, prevTree)
+	verifyTreeLAndR(t, prevTree, leftRR, right)
+	verifyTreeLAndR(t, left, leftL, leftRL)
+	verifyGetHeightVal(t, tree, 2)
+	verifyGetHeightVal(t, prevTree, 1)
+	verifyGetHeightVal(t, left, 1)
+}
+
 //      t                       t                        RL
 // L         R             L         RL              t        R
 //        RL   RR     ->          RLL    R     ->  L  RLL   RLR RR
@@ -695,6 +753,9 @@ func TestTreeBalance(t *testing.T) {
 	testTreeBalance_Nil(t)
 	testTreeBalance_Empty(t)
 	testTreeBalance_AlreadyBalanced(t)
+	testTreeBalance_BalancesIn1LftRtt(t)
+	testTreeBalance_BalancesIn1RghtRtt(t)
+	testTreeBalance_BalancesIn1DblLftRtt(t)
 	testTreeBalance_BalancesIn1DblRghtRtt(t)
 }
 
