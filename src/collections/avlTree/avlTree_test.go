@@ -442,15 +442,25 @@ func TestTreeRotateRightToRoot(t *testing.T) {
 }
 
 func verifyTreeDoubleRotateLeft_Empty(t *testing.T, tree *AvlTree) {
-	prevTree := tree
-	tree.doubleRotateLeftToRoot()
-	verifyTreeNodesEqual(t, tree, prevTree)
+	if tree == nil {
+		doubleRotateLeftToRoot(&tree)
+		verifyTreeNodesEqual(t, tree, nil)
+	} else {
+		prevTree := &*tree
+		doubleRotateLeftToRoot(&tree)
+		verifyTreeNodesEqual(t, tree, prevTree)
+	}
 }
 
 func verifyTreeDoubleRotateRight_Empty(t *testing.T, tree *AvlTree) {
-	prevTree := tree
-	tree.doubleRotateRightToRoot()
-	verifyTreeNodesEqual(t, tree, prevTree)
+	if tree == nil {
+		doubleRotateRightToRoot(&tree)
+		verifyTreeNodesEqual(t, tree, nil)
+	} else {
+		prevTree := &*tree
+		doubleRotateRightToRoot(&tree)
+		verifyTreeNodesEqual(t, tree, prevTree)
+	}
 }
 
 func testTreeDoubleRotateLeft_EmptyTree(t *testing.T) {
@@ -475,45 +485,36 @@ func testTreeDoubleRotateRight_EmptyTree(t *testing.T) {
 
 func testTreeDoubleRotateLeft_ParentWithNoLeft(t *testing.T) {
 	right := createAvlTree_Leaf("right", 2)
-	parentNode := createAvlNode("parent", 1)
-	parent := createAvlTree(parentNode, nil, right)
-	prevParentVal := *parent
-	parent.doubleRotateLeftToRoot()
-	if *parent != prevParentVal {
-		t.Errorf("tree == &%v, expected &%v", *parent, prevParentVal)
-	}
+	tree := createAvlTreeWithHeight("parent", 1, 1, nil, right)
+	prevTree := &*tree
+	doubleRotateLeftToRoot(&tree)
+	verifyTreeNodesEqual(t, tree, prevTree)
 }
 
 func testTreeDoubleRotateRight_ParentWithNoRight(t *testing.T) {
 	left := createAvlTree_Leaf("left", 2)
-	parent := createAvlTreeWithHeight("parent", 5, 1, left, nil)
-	prevParentVal := *parent
-	parent.doubleRotateRightToRoot()
-	if *parent != prevParentVal {
-		t.Errorf("tree == &%v, expected &%v", *parent, prevParentVal)
-	}
+	tree := createAvlTreeWithHeight("parent", 5, 1, left, nil)
+	prevTree := &*tree
+	doubleRotateRightToRoot(&tree)
+	verifyTreeNodesEqual(t, tree, prevTree)
 }
 
 func testTreeDoubleRotateLeft_LeftWithNoRight(t *testing.T) {
 	left := createAvlTree_Leaf("left", 0)
 	right := createAvlTree_Leaf("right", 2)
-	parent := createAvlTreeWithHeight("parent", 1, 1, left, right)
-	prevParentVal := *parent
-	parent.doubleRotateLeftToRoot()
-	if *parent != prevParentVal {
-		t.Errorf("tree == &%v, expected &%v", *parent, prevParentVal)
-	}
+	tree := createAvlTreeWithHeight("parent", 1, 1, left, right)
+	prevTree := &*tree
+	doubleRotateLeftToRoot(&tree)
+	verifyTreeNodesEqual(t, tree, prevTree)
 }
 
 func testTreeDoubleRotateRight_RightWithNoLeft(t *testing.T) {
 	left := createAvlTree_Leaf("left", 0)
 	right := createAvlTree_Leaf("right", 2)
-	parent := createAvlTreeWithHeight("parent", 1, 1, left, right)
-	prevParentVal := *parent
-	parent.doubleRotateRightToRoot()
-	if *parent != prevParentVal {
-		t.Errorf("tree == &%v, expected &%v", *parent, prevParentVal)
-	}
+	tree := createAvlTreeWithHeight("parent", 1, 1, left, right)
+	prevTree := &*tree
+	doubleRotateRightToRoot(&tree)
+	verifyTreeNodesEqual(t, tree, prevTree)
 }
 
 //    t              t              LR
@@ -524,18 +525,19 @@ func testTreeDoubleRotateLeft_LeftWithRight(t *testing.T) {
 	left := createAvlTreeWithHeight("left", -10, 1, nil, leftR)
 	right := createAvlTree_Leaf("right", 5)
 	tree := createAvlTreeWithHeight("parent", 0, 2, left, right)
+	prevTree := &*tree
 
-	tree.doubleRotateLeftToRoot()
-	// if tree != leftR {
-	// 	debug_printTree(tree, "T")
-	// 	t.Errorf("tree == %v, expected %v", tree, leftR)
-	// }
-	verifyTreeLAndR(t, tree, nil, right)
+	doubleRotateLeftToRoot(&tree)
+	if tree != leftR {
+		debug_printTree(tree, "T")
+		t.Errorf("tree == %v, expected %v", tree, leftR)
+	}
+	verifyTreeLAndR(t, tree, left, prevTree)
+	verifyTreeLAndR(t, prevTree, nil, right)
 	verifyTreeLAndR(t, left, nil, nil)
-	verifyTreeLAndR(t, leftR, left, tree)
-	verifyGetHeightVal(t, tree, 1)
+	verifyGetHeightVal(t, tree, 2)
+	verifyGetHeightVal(t, prevTree, 1)
 	verifyGetHeightVal(t, left, 0)
-	verifyGetHeightVal(t, leftR, 2)
 }
 
 //    t              t              RL
@@ -548,41 +550,69 @@ func testTreeDoubleRotateRight_RightWithLeft(t *testing.T) {
 	tree := createAvlTreeWithHeight("parent", 0, 2, left, right)
 	prevTree := &*tree
 
-	tree.doubleRotateRightToRoot()
-	// if tree != rightL {
-	// 	t.Errorf("tree == %v, expected %v", tree, rightL)
-	// }
+	doubleRotateRightToRoot(&tree)
+	if tree != rightL {
+		t.Errorf("tree == %v, expected %v", tree, rightL)
+	}
+	verifyTreeLAndR(t, tree, prevTree, right)
 	verifyTreeLAndR(t, prevTree, left, nil)
 	verifyTreeLAndR(t, right, nil, nil)
-	verifyTreeLAndR(t, rightL, prevTree, right)
+	verifyTreeLAndR(t, left, nil, nil)
+	verifyGetHeightVal(t, tree, 2)
 	verifyGetHeightVal(t, prevTree, 1)
 	verifyGetHeightVal(t, right, 0)
-	verifyGetHeightVal(t, rightL, 2)
 }
 
 //          t                        t                     LR
-//     L         R             LR         R           L          T
+//     L         R             LR         R           L          t
 // LL    LR          ->     L     LRR         ->   LL  LRL    LRR  R
 //     LRL LRR           LL  LRL
 func testTreeDoubleRotateLeft_LeftWithGrandchildren(t *testing.T) {
-	// leftL := createAvlTree_Leaf("LL", -15)
-	// leftRL := createAvlTree_Leaf("LRL", -5)
-	// leftRR := createAvlTree_Leaf("LRR", -1)
-	// leftR := createAvlTreeWithHeight("LR", -3, 1, leftRL, leftRR)
-	// left := createAvlTreeWithHeight("L", -10, 2, leftL, leftR)
-	// right := createAvlTree_Leaf("R", 10)
-	// tree := createAvlTreeWithHeight("T", 5, 3, left, right)
+	leftL := createAvlTree_Leaf("LL", -15)
+	leftRL := createAvlTree_Leaf("LRL", -5)
+	leftRR := createAvlTree_Leaf("LRR", -1)
+	leftR := createAvlTreeWithHeight("LR", -3, 1, leftRL, leftRR)
+	left := createAvlTreeWithHeight("L", -10, 2, leftL, leftR)
+	right := createAvlTree_Leaf("R", 10)
+	tree := createAvlTreeWithHeight("T", 5, 3, left, right)
+	prevTree := &*tree
 
-	// tree.doubleRotateLeftToRoot()
-	// if tree != leftR {
-	// 	t.Errorf("tree == %v, expected %v", tree, leftR)
-	// }
-	// verifyTreeLAndR(t, tree, left, nil)
-	// verifyTreeLAndR(t, right, nil, nil)
-	// verifyTreeLAndR(t, rightL, tree, right)
-	// verifyGetHeightVal(t, tree, 1)
-	// verifyGetHeightVal(t, right, 0)
-	// verifyGetHeightVal(t, rightL, 2)
+	doubleRotateLeftToRoot(&tree)
+	if tree != leftR {
+		t.Errorf("tree == %v, expected %v", tree, leftR)
+	}
+	verifyTreeLAndR(t, tree, left, prevTree)
+	verifyTreeLAndR(t, prevTree, leftRR, right)
+	verifyTreeLAndR(t, left, leftL, leftRL)
+	verifyGetHeightVal(t, tree, 2)
+	verifyGetHeightVal(t, prevTree, 1)
+	verifyGetHeightVal(t, left, 1)
+}
+
+//      t                       t                        RL
+// L         R             L         RL              t        R
+//        RL   RR     ->          RLL    R     ->  L  RLL   RLR RR
+//     RLL RLR                        RLR RR
+func testTreeDoubleRotateRight_RightWithGrandchildren(t *testing.T) {
+	left := createAvlTree_Leaf("L", -5)
+	rightLL := createAvlTree_Leaf("RLL", 1)
+	rightLR := createAvlTree_Leaf("RLR", 5)
+	rightL := createAvlTreeWithHeight("RL", 3, 1, rightLL, rightLR)
+	rightR := createAvlTree_Leaf("RR", 15)
+	right := createAvlTreeWithHeight("R", 10, 2, rightL, rightR)
+	tree := createAvlTreeWithHeight("T", 0, 3, left, right)
+	prevTree := &*tree
+
+	doubleRotateRightToRoot(&tree)
+	if tree != rightL {
+		t.Errorf("tree == %v, expected %v", tree, rightL)
+	}
+	verifyTreeLAndR(t, tree, prevTree, right)
+	verifyTreeLAndR(t, prevTree, left, rightLL)
+	verifyTreeLAndR(t, right, rightLR, rightR)
+	verifyGetHeightVal(t, tree, 2)
+	verifyGetHeightVal(t, prevTree, 1)
+	verifyGetHeightVal(t, right, 1)
 }
 
 func TestTreeDoubleRotateLeftToRoot(t *testing.T) {
@@ -598,6 +628,7 @@ func TestTreeDoubleRotateRightToRoot(t *testing.T) {
 	testTreeDoubleRotateRight_ParentWithNoRight(t)
 	testTreeDoubleRotateRight_RightWithNoLeft(t)
 	testTreeDoubleRotateRight_RightWithLeft(t)
+	testTreeDoubleRotateRight_RightWithGrandchildren(t)
 }
 
 func testMax_DiffVals(t *testing.T) {
