@@ -300,8 +300,7 @@ func testTreeRotateRight_Leaf(t *testing.T) {
 
 func testTreeRotateLeft_ParentWithNoLeft(t *testing.T) {
 	right := createAvlTree_Leaf("right", 2)
-	parentNode := createAvlNode("parent", 1)
-	parent := createAvlTree(parentNode, nil, right)
+	parent := createAvlTreeWithHeight("parent", 1, 1, nil, right)
 	prevParentVal := *parent
 	rotateLeftToRoot(&parent)
 	if *parent != prevParentVal {
@@ -629,6 +628,74 @@ func TestTreeDoubleRotateRightToRoot(t *testing.T) {
 	testTreeDoubleRotateRight_RightWithNoLeft(t)
 	testTreeDoubleRotateRight_RightWithLeft(t)
 	testTreeDoubleRotateRight_RightWithGrandchildren(t)
+}
+
+func verifyTreeBalanceHasNoEffect(t *testing.T, tree *AvlTree) {
+	prevTree := &*tree
+	balance(&tree)
+	verifyTreeNodesEqual(t, tree, prevTree)
+}
+
+func testTreeBalance_Nil(t *testing.T) {
+	var tree *AvlTree = nil
+	balance(&tree)
+	verifyTreeNodesEqual(t, tree, nil)
+}
+
+func testTreeBalance_AlreadyBalanced(t *testing.T) {
+	leftL := createAvlTree_Leaf("LL", -5)
+	verifyTreeBalanceHasNoEffect(t, leftL)
+
+	leftR := createAvlTree_Leaf("LR", 5)
+	left := createAvlTreeWithHeight("L", 1, 1, leftL, leftR)
+	verifyTreeBalanceHasNoEffect(t, left)
+
+	rightL := createAvlTree_Leaf("RL", 80)
+	rightR := createAvlTree_Leaf("RR", 100)
+	right := createAvlTreeWithHeight("R", 90, 1, rightL, rightR)
+	tree := createAvlTreeWithHeight("root", 50, 2, left, right)
+	verifyTreeBalanceHasNoEffect(t, tree)
+}
+
+func testTreeBalance_Empty(t *testing.T) {
+	var nilTree AvlTree
+	verifyTreeBalanceHasNoEffect(t, &nilTree)
+
+	emptyTree := newAvlTree()
+	verifyTreeBalanceHasNoEffect(t, emptyTree)
+}
+
+//      t                       t                        RL
+// L         R             L         RL              t        R
+//        RL   RR     ->          RLL    R     ->  L  RLL   RLR RR
+//     RLL RLR                        RLR RR
+func testTreeBalance_BalancesIn1DblRghtRtt(t *testing.T) {
+	left := createAvlTree_Leaf("L", -5)
+	rightLL := createAvlTree_Leaf("RLL", 1)
+	rightLR := createAvlTree_Leaf("RLR", 5)
+	rightL := createAvlTreeWithHeight("RL", 3, 1, rightLL, rightLR)
+	rightR := createAvlTree_Leaf("RR", 15)
+	right := createAvlTreeWithHeight("R", 10, 2, rightL, rightR)
+	tree := createAvlTreeWithHeight("T", 0, 3, left, right)
+	prevTree := &*tree
+
+	balance(&tree)
+	if tree != rightL {
+		t.Errorf("tree == %v, expected %v", tree, rightL)
+	}
+	verifyTreeLAndR(t, tree, prevTree, right)
+	verifyTreeLAndR(t, prevTree, left, rightLL)
+	verifyTreeLAndR(t, right, rightLR, rightR)
+	verifyGetHeightVal(t, tree, 2)
+	verifyGetHeightVal(t, prevTree, 1)
+	verifyGetHeightVal(t, right, 1)
+}
+
+func TestTreeBalance(t *testing.T) {
+	testTreeBalance_Nil(t)
+	testTreeBalance_Empty(t)
+	testTreeBalance_AlreadyBalanced(t)
+	testTreeBalance_BalancesIn1DblRghtRtt(t)
 }
 
 func testMax_DiffVals(t *testing.T) {

@@ -72,7 +72,7 @@ func (tree *AvlTree) updateHeightAndBalance() {
 	tree.updateHeight()
 	newHeight := tree.getHeight()
 	if newHeight != prevHeight {
-		tree.balance()
+		balance(&tree)
 	}
 }
 
@@ -103,12 +103,13 @@ func (tree *AvlTree) getHeight() int {
 	return tree.height
 }
 
-func (tree *AvlTree) balance() {
-	if tree == nil {
+func balance(ptree **AvlTree) {
+	if ptree == nil || *ptree == nil {
 		return
 	}
-	tree.left.balance()
-	tree.right.balance()
+	tree := *ptree
+	balance(&tree.left)
+	balance(&tree.right)
 	currBalance := tree.left.getHeight() - tree.right.getHeight()
 	if currBalance > 1 {
 		if tree.left.left.getHeight() > tree.left.right.getHeight() {
@@ -123,6 +124,7 @@ func (tree *AvlTree) balance() {
 			doubleRotateRightToRoot(&tree)
 		}
 	}
+	*ptree = tree
 }
 
 //Graphical representation of rotateLeftToRoot(&t):
