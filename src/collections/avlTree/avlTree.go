@@ -2,7 +2,6 @@ package avlTree
 
 import (
 	"fmt"
-	"sync"
 )
 
 type avlNode struct {
@@ -34,7 +33,6 @@ type AvlTree struct {
 	height int
 	left   *AvlTree
 	right  *AvlTree
-	lock   sync.RWMutex
 }
 
 func newAvlTree() *AvlTree {
