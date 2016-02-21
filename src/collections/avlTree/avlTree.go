@@ -66,6 +66,20 @@ func Max(tree *AvlTree) *AvlNode {
 	return Max(tree.right)
 }
 
+func Has(tree *AvlTree, node *AvlNode) bool {
+	if tree != nil && tree.root != nil && node != nil {
+		rootToNodeCompare := tree.root.compare(node)
+		if rootToNodeCompare == 0 {
+			return true
+		}
+		if rootToNodeCompare > 0 {
+			return Has(tree.left, node)
+		}
+		return Has(tree.right, node)
+	}
+	return false
+}
+
 func getTreePtrForInsert(ptree **AvlTree) *AvlTree {
 	var tree *AvlTree
 	if *ptree == nil {

@@ -915,6 +915,126 @@ func TestTreeMax(t *testing.T) {
 	testTreeMax_HasRightGrandchildOnRight(t)
 }
 
+func testTreeHas_NilTree(t *testing.T) {
+	var nilTree *AvlTree = nil
+	node := createAvlNode("data", 5)
+	hasNode := Has(nilTree, node)
+	if hasNode {
+		t.Errorf("Has(%v, %v) == true, expected false", nilTree, node)
+	}
+}
+
+func testTreeHas_EmptyTree(t *testing.T) {
+	var tree AvlTree
+	node := createAvlNode("data", 5)
+	hasNode := Has(&tree, node)
+	if hasNode {
+		t.Errorf("Has(&%v, %v) == true, expected false", tree, node)
+	}
+}
+
+func testTreeHas_NilNode(t *testing.T) {
+	tree := createAvlTree_Leaf("data", 5)
+	var node *AvlNode = nil
+	hasNode := Has(tree, node)
+	if hasNode {
+		t.Errorf("Has(%v, %v) == true, expected false", tree, node)
+	}
+}
+
+func testTreeHas_IsRoot(t *testing.T) {
+	node := createAvlNode("data", 6)
+	tree := NewAvlTree()
+	Insert(&tree, node)
+	hasNode := Has(tree, node)
+	if !hasNode {
+		t.Errorf("Has(%v, %v) == false, expected true", tree, node)
+	}
+}
+
+func testTreeHas_IsChild(t *testing.T) {
+	leftL := createAvlTree_Leaf("LL", -1)
+	leftR := createAvlTree_Leaf("LR", 3)
+	data := "data"
+	priority := 2
+	left := createAvlTreeWithHeight(data, priority, 1, leftL, leftR)
+	rightL := createAvlTree_Leaf("RL", 14)
+	right := createAvlTreeWithHeight("R", 15, 1, rightL, nil)
+	tree := createAvlTreeWithHeight("root", 10, 2, left, right)
+
+	searchNode := createAvlNode(data, priority)
+	hasNode := Has(tree, searchNode)
+	if !hasNode {
+		t.Errorf("Has(%v, %v) == false, expected true", tree, searchNode)
+		debug_printTree(tree, "T")
+	}
+}
+
+func testTreeHas_IsGrandchild(t *testing.T) {
+	leftL := createAvlTree_Leaf("LL", -1)
+	data := "data"
+	priority := 3
+	leftR := createAvlTree_Leaf(data, priority)
+	left := createAvlTreeWithHeight("L", 2, 1, leftL, leftR)
+	rightL := createAvlTree_Leaf("RL", 14)
+	right := createAvlTreeWithHeight("R", 15, 1, rightL, nil)
+	tree := createAvlTreeWithHeight("root", 10, 2, left, right)
+
+	searchNode := createAvlNode(data, priority)
+	hasNode := Has(tree, searchNode)
+	if !hasNode {
+		t.Errorf("Has(%v, %v) == false, expected true", tree, searchNode)
+		debug_printTree(tree, "T")
+	}
+}
+
+func testTreeHas_PriorityNotInTree(t *testing.T) {
+	leftL := createAvlTree_Leaf("LL", -1)
+	data := "data"
+	leftR := createAvlTree_Leaf(data, 3)
+	left := createAvlTreeWithHeight("L", 2, 1, leftL, leftR)
+	rightL := createAvlTree_Leaf("RL", 14)
+	right := createAvlTreeWithHeight("R", 15, 1, rightL, nil)
+	tree := createAvlTreeWithHeight("root", 10, 2, left, right)
+
+	unusedPriority := 4
+	searchNode := createAvlNode(data, unusedPriority)
+	hasNode := Has(tree, searchNode)
+	if hasNode {
+		t.Errorf("Has(%v, %v) == true, expected false", tree, searchNode)
+		debug_printTree(tree, "T")
+	}
+}
+
+func testTreeHas_DataNotInTree(t *testing.T) {
+	leftL := createAvlTree_Leaf("LL", -1)
+	leftR := createAvlTree_Leaf("LR", 3)
+	left := createAvlTreeWithHeight("L", 2, 1, leftL, leftR)
+	priority := 14
+	rightL := createAvlTree_Leaf("RL", priority)
+	right := createAvlTreeWithHeight("R", 15, 1, rightL, nil)
+	tree := createAvlTreeWithHeight("root", 10, 2, left, right)
+
+	unusedData := "data"
+	searchNode := createAvlNode(unusedData, priority)
+	hasNode := Has(tree, searchNode)
+	if hasNode {
+		t.Errorf("Has(%v, %v) == true, expected false", tree, searchNode)
+		debug_printTree(tree, "T")
+	}
+}
+
+func TestTreeHas(t *testing.T) {
+	testTreeHas_NilTree(t)
+	testTreeHas_EmptyTree(t)
+	testTreeHas_NilNode(t)
+	testTreeHas_IsRoot(t)
+	testTreeHas_IsChild(t)
+	testTreeHas_IsGrandchild(t)
+	testTreeHas_PriorityNotInTree(t)
+	testTreeHas_DataNotInTree(t)
+}
+
 func testMaxInt_DiffVals(t *testing.T) {
 	lower := -1
 	higher := 0
