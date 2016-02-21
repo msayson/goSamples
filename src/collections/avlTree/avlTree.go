@@ -83,17 +83,21 @@ func Min(tree *AvlTree) *AvlNode {
 
 //Returns true iff tree contains node
 func Has(tree *AvlTree, node *AvlNode) bool {
+	return findSubtreeWithNodeAsRoot(tree, node) != nil
+}
+
+func findSubtreeWithNodeAsRoot(tree *AvlTree, node *AvlNode) *AvlTree {
 	if tree != nil && tree.root != nil && node != nil {
 		rootToNodeCompare := tree.root.compare(node)
 		if rootToNodeCompare == 0 {
-			return true
+			return tree
 		}
 		if rootToNodeCompare > 0 {
-			return Has(tree.left, node)
+			return findSubtreeWithNodeAsRoot(tree.left, node)
 		}
-		return Has(tree.right, node)
+		return findSubtreeWithNodeAsRoot(tree.right, node)
 	}
-	return false
+	return nil
 }
 
 func getTreePtrForInsert(ptree **AvlTree) *AvlTree {
