@@ -35,11 +35,15 @@ type AvlTree struct {
 	right  *AvlTree
 }
 
+//Creates an empty AVL tree
 func NewAvlTree() *AvlTree {
 	var tree AvlTree
+	tree.height = -1
 	return &tree
 }
 
+//Inserts node into *ptree and rebalances the tree
+//Returns immediately if *ptree or node is nil
 func Insert(ptree **AvlTree, node *AvlNode) {
 	if ptree == nil || node == nil {
 		return
@@ -77,6 +81,7 @@ func Min(tree *AvlTree) *AvlNode {
 	return Min(tree.left)
 }
 
+//Returns true iff tree contains node
 func Has(tree *AvlTree, node *AvlNode) bool {
 	if tree != nil && tree.root != nil && node != nil {
 		rootToNodeCompare := tree.root.compare(node)

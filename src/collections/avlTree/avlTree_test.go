@@ -72,6 +72,23 @@ func TestNodeCompare(t *testing.T) {
 	testNodeCompare_OtherHasSamePriorityHigherData(t)
 }
 
+func TestNewAvlTree(t *testing.T) {
+	tree := NewAvlTree()
+	expectedHeight := -1
+	if tree.height != expectedHeight {
+		t.Errorf("tree.height == %d, expected %d", tree.height, expectedHeight)
+	}
+	if tree.root != nil {
+		t.Errorf("tree.root == %v, expected nil", tree.root)
+	}
+	if tree.left != nil {
+		t.Errorf("tree.left == %v, expected nil", tree.left)
+	}
+	if tree.right != nil {
+		t.Errorf("tree.right == %v, expected nil", tree.right)
+	}
+}
+
 func verifyTreeIsEmptyVal(t *testing.T, tree *AvlTree, expected bool) {
 	isEmpty := tree.isEmpty()
 	if isEmpty != expected {
@@ -126,8 +143,7 @@ func testTreeCalcHeightFromChildren_Leaf(t *testing.T) {
 
 func testTreeCalcHeightFromChildren_Parent(t *testing.T) {
 	left := createAvlTree_Leaf("lower", 1)
-	rootNode := createAvlNode("higher", 3)
-	tree := createAvlTree(rootNode, left, nil)
+	tree := createAvlTreeWithHeight("higher", 3, 1, left, nil)
 
 	expectedHeight := 1
 	verifyTreeCalcHeightFromChildrenVal(t, tree, expectedHeight)
@@ -136,8 +152,7 @@ func testTreeCalcHeightFromChildren_Parent(t *testing.T) {
 func testTreeCalcHeightFromChildren_Grandparent(t *testing.T) {
 	grandchild := createAvlTree_Leaf("low", 2)
 	left := createAvlTreeWithHeight("lowest", 1, 1, nil, grandchild)
-	rootNode := createAvlNode("high", 3)
-	tree := createAvlTree(rootNode, left, nil)
+	tree := createAvlTreeWithHeight("high", 3, 2, left, nil)
 
 	expectedHeight := 2
 	verifyTreeCalcHeightFromChildrenVal(t, tree, expectedHeight)
@@ -209,9 +224,7 @@ func testTreeUpdateHeight_Leaf(t *testing.T) {
 
 func testTreeUpdateHeight_Parent(t *testing.T) {
 	leaf := createAvlTree_Leaf("a", 1)
-
-	parentNode := createAvlNode("b", 5)
-	parent := createAvlTree(parentNode, leaf, nil)
+	parent := createAvlTreeWithHeight("b", 5, 1, leaf, nil)
 
 	expectedNewHeight := 1
 	verifyUpdateHeight(t, parent, expectedNewHeight)
@@ -1135,24 +1148,20 @@ func TestMaxInt(t *testing.T) {
 	testMaxInt_SameVals(t)
 }
 
-func createAvlTree(rootNode *AvlNode, left *AvlTree, right *AvlTree) *AvlTree {
+func createAvlTreeWithHeight(data string, priority int, height int, left *AvlTree, right *AvlTree) *AvlTree {
 	tree := NewAvlTree()
-	tree.root = rootNode
+	tree.root = createAvlNode(data, priority)
+	tree.height = height
 	tree.left = left
 	tree.right = right
 	return tree
 }
 
-func createAvlTreeWithHeight(data string, priority int, height int, left *AvlTree, right *AvlTree) *AvlTree {
-	rootNode := createAvlNode(data, priority)
-	tree := createAvlTree(rootNode, left, right)
-	tree.height = height
-	return tree
-}
-
 func createAvlTree_Leaf(data string, priority int) *AvlTree {
-	node := createAvlNode(data, priority)
-	return createAvlTree(node, nil, nil)
+	tree := NewAvlTree()
+	tree.root = createAvlNode(data, priority)
+	tree.height = 0
+	return tree
 }
 
 func createAvlNode(data string, priority int) *AvlNode {
