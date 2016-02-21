@@ -55,6 +55,17 @@ func Insert(ptree **AvlTree, node *avlNode) {
 	*ptree = tree
 }
 
+//Returns max element in AVL Tree
+func Max(tree *AvlTree) *avlNode {
+	if tree == nil || tree.root == nil {
+		return nil
+	}
+	if tree.right == nil {
+		return tree.root
+	}
+	return Max(tree.right)
+}
+
 func getTreePtrForInsert(ptree **AvlTree) *AvlTree {
 	var tree *AvlTree
 	if *ptree == nil {

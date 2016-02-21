@@ -842,6 +842,79 @@ func TestTreeInsert(t *testing.T) {
 	testTreeInsert_LongTailShouldBalance(t)
 }
 
+func testTreeMax_NilTree(t *testing.T) {
+	var nilTree *AvlTree = nil
+	max := Max(nilTree)
+	verifyNodePointersEqual(t, max, nil)
+}
+
+func testTreeMax_EmptyTree(t *testing.T) {
+	emptyTree := newAvlTree()
+	max := Max(emptyTree)
+	verifyNodePointersEqual(t, max, nil)
+}
+
+func testTreeMax_SingleElement(t *testing.T) {
+	node := createAvlNode("data", 6)
+	tree := newAvlTree()
+	Insert(&tree, node)
+	max := Max(tree)
+	verifyNodePointersEqual(t, max, node)
+}
+
+func testTreeMax_NoRightNodes(t *testing.T) {
+	tree := newAvlTree()
+	rootNode := createAvlNode("root", -6)
+	leftNode := createAvlNode("left", -9)
+	Insert(&tree, rootNode)
+	Insert(&tree, leftNode)
+
+	max := Max(tree)
+	verifyNodePointersEqual(t, max, rootNode)
+}
+
+func testTreeMax_HasRightGrandchildOnLeft(t *testing.T) {
+	left := createAvlTree_Leaf("L", 3)
+	rightL := createAvlTree_Leaf("RL", 6)
+	rightData := "R"
+	rightPriority := 7
+	right := createAvlTreeWithHeight(rightData, rightPriority, 1, rightL, nil)
+	tree := createAvlTreeWithHeight("root", 5, 2, left, right)
+
+	max := Max(tree)
+	if max == nil {
+		t.Errorf("Max(tree) == nil, expected &{%s %d}", rightData, rightPriority)
+	} else if max.data != rightData || max.priority != rightPriority {
+		t.Errorf("Max(tree) == %v, expected &{%s %d}", max, rightData, rightPriority)
+	}
+}
+
+func testTreeMax_HasRightGrandchildOnRight(t *testing.T) {
+	left := createAvlTree_Leaf("L", 3)
+	rightL := createAvlTree_Leaf("RL", 6)
+	maxData := "RR"
+	maxPriority := 10
+	rightR := createAvlTree_Leaf(maxData, maxPriority)
+	right := createAvlTreeWithHeight("R", 8, 1, rightL, rightR)
+	tree := createAvlTreeWithHeight("root", 5, 2, left, right)
+
+	max := Max(tree)
+	if max == nil {
+		t.Errorf("Max(tree) == nil, expected &{%s %d}", maxData, maxPriority)
+	} else if max.data != maxData || max.priority != maxPriority {
+		t.Errorf("Max(tree) == %v, expected &{%s %d}", max, maxData, maxPriority)
+	}
+}
+
+func TestTreeMax(t *testing.T) {
+	testTreeMax_NilTree(t)
+	testTreeMax_EmptyTree(t)
+	testTreeMax_SingleElement(t)
+	testTreeMax_NoRightNodes(t)
+	testTreeMax_HasRightGrandchildOnLeft(t)
+	testTreeMax_HasRightGrandchildOnRight(t)
+}
+
 func testMaxInt_DiffVals(t *testing.T) {
 	lower := -1
 	higher := 0
