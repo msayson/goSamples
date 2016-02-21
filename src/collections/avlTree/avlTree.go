@@ -55,7 +55,7 @@ func Insert(ptree **AvlTree, node *AvlNode) {
 	*ptree = tree
 }
 
-//Returns max element in AVL Tree
+//Returns max element in AVL tree
 func Max(tree *AvlTree) *AvlNode {
 	if tree == nil || tree.root == nil {
 		return nil
@@ -64,6 +64,17 @@ func Max(tree *AvlTree) *AvlNode {
 		return tree.root
 	}
 	return Max(tree.right)
+}
+
+//Returns min element in AVL tree
+func Min(tree *AvlTree) *AvlNode {
+	if tree == nil || tree.root == nil {
+		return nil
+	}
+	if tree.left == nil {
+		return tree.root
+	}
+	return Min(tree.left)
 }
 
 func Has(tree *AvlTree, node *AvlNode) bool {

@@ -915,6 +915,80 @@ func TestTreeMax(t *testing.T) {
 	testTreeMax_HasRightGrandchildOnRight(t)
 }
 
+func testTreeMin_NilTree(t *testing.T) {
+	var nilTree *AvlTree = nil
+	min := Min(nilTree)
+	verifyNodePointersEqual(t, min, nil)
+}
+
+func testTreeMin_EmptyTree(t *testing.T) {
+	emptyTree := NewAvlTree()
+	min := Min(emptyTree)
+	verifyNodePointersEqual(t, min, nil)
+}
+
+func testTreeMin_SingleElement(t *testing.T) {
+	node := createAvlNode("data", 6)
+	tree := NewAvlTree()
+	Insert(&tree, node)
+	min := Min(tree)
+	verifyNodePointersEqual(t, min, node)
+}
+
+func testTreeMin_NoLeftNodes(t *testing.T) {
+	tree := NewAvlTree()
+	rootNode := createAvlNode("root", -6)
+	rightNode := createAvlNode("right", 3)
+	Insert(&tree, rootNode)
+	Insert(&tree, rightNode)
+
+	min := Min(tree)
+	verifyNodePointersEqual(t, min, rootNode)
+}
+
+func testTreeMin_HasLeftGrandchildOnRight(t *testing.T) {
+	leftR := createAvlTree_Leaf("LR", 4)
+	leftData := "L"
+	leftPriority := 3
+	left := createAvlTreeWithHeight(leftData, leftPriority, 1, nil, leftR)
+	right := createAvlTree_Leaf("R", 12)
+	tree := createAvlTreeWithHeight("root", 5, 2, left, right)
+
+	min := Min(tree)
+	if min == nil {
+		t.Errorf("Min(tree) == nil, expected &{%s %d}", leftData, leftPriority)
+	} else if min.data != leftData || min.priority != leftPriority {
+		t.Errorf("Min(tree) == %v, expected &{%s %d}", min, leftData, leftPriority)
+	}
+}
+
+func testTreeMin_HasLeftGrandchildOnLeft(t *testing.T) {
+	minData := "LL"
+	minPriority := 2
+	leftL := createAvlTree_Leaf(minData, minPriority)
+	leftR := createAvlTree_Leaf("LR", 4)
+	left := createAvlTreeWithHeight("L", 3, 1, leftL, leftR)
+
+	right := createAvlTree_Leaf("R", 9)
+	tree := createAvlTreeWithHeight("root", 5, 2, left, right)
+
+	min := Min(tree)
+	if min == nil {
+		t.Errorf("Min(tree) == nil, expected &{%s %d}", minData, minPriority)
+	} else if min.data != minData || min.priority != minPriority {
+		t.Errorf("Min(tree) == %v, expected &{%s %d}", min, minData, minPriority)
+	}
+}
+
+func TestTreeMin(t *testing.T) {
+	testTreeMin_NilTree(t)
+	testTreeMin_EmptyTree(t)
+	testTreeMin_SingleElement(t)
+	testTreeMin_NoLeftNodes(t)
+	testTreeMin_HasLeftGrandchildOnRight(t)
+	testTreeMin_HasLeftGrandchildOnLeft(t)
+}
+
 func testTreeHas_NilTree(t *testing.T) {
 	var nilTree *AvlTree = nil
 	node := createAvlNode("data", 5)
