@@ -143,7 +143,7 @@ func testTreeCalcHeightFromChildren_Leaf(t *testing.T) {
 
 func testTreeCalcHeightFromChildren_Parent(t *testing.T) {
 	left := createAvlTree_Leaf("lower", 1)
-	tree := createAvlTreeWithHeight("higher", 3, 1, left, nil)
+	tree := createAvlTree("higher", 3, 1, left, nil)
 
 	expectedHeight := 1
 	verifyTreeCalcHeightFromChildrenVal(t, tree, expectedHeight)
@@ -151,8 +151,8 @@ func testTreeCalcHeightFromChildren_Parent(t *testing.T) {
 
 func testTreeCalcHeightFromChildren_Grandparent(t *testing.T) {
 	grandchild := createAvlTree_Leaf("low", 2)
-	left := createAvlTreeWithHeight("lowest", 1, 1, nil, grandchild)
-	tree := createAvlTreeWithHeight("high", 3, 2, left, nil)
+	left := createAvlTree("lowest", 1, 1, nil, grandchild)
+	tree := createAvlTree("high", 3, 2, left, nil)
 
 	expectedHeight := 2
 	verifyTreeCalcHeightFromChildrenVal(t, tree, expectedHeight)
@@ -224,7 +224,7 @@ func testTreeUpdateHeight_Leaf(t *testing.T) {
 
 func testTreeUpdateHeight_Parent(t *testing.T) {
 	leaf := createAvlTree_Leaf("a", 1)
-	parent := createAvlTreeWithHeight("b", 5, 1, leaf, nil)
+	parent := createAvlTree("b", 5, 1, leaf, nil)
 
 	expectedNewHeight := 1
 	verifyUpdateHeight(t, parent, expectedNewHeight)
@@ -314,7 +314,7 @@ func testTreeRotateRight_Leaf(t *testing.T) {
 
 func testTreeRotateLeft_ParentWithNoLeft(t *testing.T) {
 	right := createAvlTree_Leaf("right", 2)
-	parent := createAvlTreeWithHeight("parent", 1, 1, nil, right)
+	parent := createAvlTree("parent", 1, 1, nil, right)
 	prevParentVal := *parent
 	rotateLeftToRoot(&parent)
 	if *parent != prevParentVal {
@@ -324,7 +324,7 @@ func testTreeRotateLeft_ParentWithNoLeft(t *testing.T) {
 
 func testTreeRotateLeft_ParentWithNoRight(t *testing.T) {
 	left := createAvlTree_Leaf("left", 0)
-	tree := createAvlTreeWithHeight("parent", 1, 1, left, nil)
+	tree := createAvlTree("parent", 1, 1, left, nil)
 	prevTree := &*tree
 
 	rotateLeftToRoot(&tree)
@@ -339,7 +339,7 @@ func testTreeRotateLeft_ParentWithNoRight(t *testing.T) {
 
 func testTreeRotateRight_ParentWithNoLeft(t *testing.T) {
 	right := createAvlTree_Leaf("right", 2)
-	tree := createAvlTreeWithHeight("parent", 1, 1, nil, right)
+	tree := createAvlTree("parent", 1, 1, nil, right)
 	prevTree := &*tree
 
 	rotateRightToRoot(&tree)
@@ -354,7 +354,7 @@ func testTreeRotateRight_ParentWithNoLeft(t *testing.T) {
 
 func testTreeRotateRight_ParentWithNoRight(t *testing.T) {
 	left := createAvlTree_Leaf("left", 2)
-	tree := createAvlTreeWithHeight("parent", 5, 1, left, nil)
+	tree := createAvlTree("parent", 5, 1, left, nil)
 	prevTree := &*tree
 	rotateRightToRoot(&tree)
 	if *tree != *prevTree {
@@ -365,7 +365,7 @@ func testTreeRotateRight_ParentWithNoRight(t *testing.T) {
 func testTreeRotateLeft_ParentWithLAndR(t *testing.T) {
 	left := createAvlTree_Leaf("left", 0)
 	right := createAvlTree_Leaf("right", 2)
-	tree := createAvlTreeWithHeight("parent", 1, 1, left, right)
+	tree := createAvlTree("parent", 1, 1, left, right)
 	prevTree := &*tree
 	prevLR := left.right
 
@@ -382,7 +382,7 @@ func testTreeRotateLeft_ParentWithLAndR(t *testing.T) {
 func testTreeRotateRight_ParentWithLAndR(t *testing.T) {
 	left := createAvlTree_Leaf("left", 0)
 	right := createAvlTree_Leaf("right", 2)
-	tree := createAvlTreeWithHeight("parent", 1, 1, left, right)
+	tree := createAvlTree("parent", 1, 1, left, right)
 	prevTree := &*tree
 	prevRL := right.left
 
@@ -398,12 +398,12 @@ func testTreeRotateRight_ParentWithLAndR(t *testing.T) {
 
 func testTreeRotateLeft_LongLeftTail(t *testing.T) {
 	tL4 := createAvlTree_Leaf("LLLL", -25)
-	tL3 := createAvlTreeWithHeight("LLL", -20, 1, tL4, nil)
-	tL2 := createAvlTreeWithHeight("LL", -15, 2, tL3, nil)
+	tL3 := createAvlTree("LLL", -20, 1, tL4, nil)
+	tL2 := createAvlTree("LL", -15, 2, tL3, nil)
 	tLR := createAvlTree_Leaf("LR", -5)
-	tL := createAvlTreeWithHeight("L", -10, 3, tL2, tLR)
+	tL := createAvlTree("L", -10, 3, tL2, tLR)
 	tR := createAvlTree_Leaf("R", 5)
-	root := createAvlTreeWithHeight("root", 0, 4, tL, tR)
+	root := createAvlTree("root", 0, 4, tL, tR)
 	prevTree := &*root
 
 	rotateLeftToRoot(&root)
@@ -418,12 +418,12 @@ func testTreeRotateLeft_LongLeftTail(t *testing.T) {
 
 func testTreeRotateRight_LongRightTail(t *testing.T) {
 	tR4 := createAvlTree_Leaf("RRRR", 25)
-	tR3 := createAvlTreeWithHeight("RRR", 20, 1, nil, tR4)
-	tR2 := createAvlTreeWithHeight("RR", 15, 2, nil, tR3)
+	tR3 := createAvlTree("RRR", 20, 1, nil, tR4)
+	tR2 := createAvlTree("RR", 15, 2, nil, tR3)
 	tRL := createAvlTree_Leaf("R", 5)
-	tR := createAvlTreeWithHeight("R", 10, 3, tRL, tR2)
+	tR := createAvlTree("R", 10, 3, tRL, tR2)
 	tL := createAvlTree_Leaf("L", -10)
-	tree := createAvlTreeWithHeight("root", 0, 4, tL, tR)
+	tree := createAvlTree("root", 0, 4, tL, tR)
 	prevTree := &*tree
 
 	rotateRightToRoot(&tree)
@@ -498,7 +498,7 @@ func testTreeDoubleRotateRight_EmptyTree(t *testing.T) {
 
 func testTreeDoubleRotateLeft_ParentWithNoLeft(t *testing.T) {
 	right := createAvlTree_Leaf("right", 2)
-	tree := createAvlTreeWithHeight("parent", 1, 1, nil, right)
+	tree := createAvlTree("parent", 1, 1, nil, right)
 	prevTree := &*tree
 	doubleRotateLeftToRoot(&tree)
 	verifyTreePointersEqual(t, tree, prevTree)
@@ -506,7 +506,7 @@ func testTreeDoubleRotateLeft_ParentWithNoLeft(t *testing.T) {
 
 func testTreeDoubleRotateRight_ParentWithNoRight(t *testing.T) {
 	left := createAvlTree_Leaf("left", 2)
-	tree := createAvlTreeWithHeight("parent", 5, 1, left, nil)
+	tree := createAvlTree("parent", 5, 1, left, nil)
 	prevTree := &*tree
 	doubleRotateRightToRoot(&tree)
 	verifyTreePointersEqual(t, tree, prevTree)
@@ -515,7 +515,7 @@ func testTreeDoubleRotateRight_ParentWithNoRight(t *testing.T) {
 func testTreeDoubleRotateLeft_LeftWithNoRight(t *testing.T) {
 	left := createAvlTree_Leaf("left", 0)
 	right := createAvlTree_Leaf("right", 2)
-	tree := createAvlTreeWithHeight("parent", 1, 1, left, right)
+	tree := createAvlTree("parent", 1, 1, left, right)
 	prevTree := &*tree
 	doubleRotateLeftToRoot(&tree)
 	verifyTreePointersEqual(t, tree, prevTree)
@@ -524,7 +524,7 @@ func testTreeDoubleRotateLeft_LeftWithNoRight(t *testing.T) {
 func testTreeDoubleRotateRight_RightWithNoLeft(t *testing.T) {
 	left := createAvlTree_Leaf("left", 0)
 	right := createAvlTree_Leaf("right", 2)
-	tree := createAvlTreeWithHeight("parent", 1, 1, left, right)
+	tree := createAvlTree("parent", 1, 1, left, right)
 	prevTree := &*tree
 	doubleRotateRightToRoot(&tree)
 	verifyTreePointersEqual(t, tree, prevTree)
@@ -535,9 +535,9 @@ func testTreeDoubleRotateRight_RightWithNoLeft(t *testing.T) {
 //  LR           L                      R
 func testTreeDoubleRotateLeft_LeftWithRight(t *testing.T) {
 	leftR := createAvlTree_Leaf("leftR", -5)
-	left := createAvlTreeWithHeight("left", -10, 1, nil, leftR)
+	left := createAvlTree("left", -10, 1, nil, leftR)
 	right := createAvlTree_Leaf("right", 5)
-	tree := createAvlTreeWithHeight("parent", 0, 2, left, right)
+	tree := createAvlTree("parent", 0, 2, left, right)
 	prevTree := &*tree
 
 	doubleRotateLeftToRoot(&tree)
@@ -559,8 +559,8 @@ func testTreeDoubleRotateLeft_LeftWithRight(t *testing.T) {
 func testTreeDoubleRotateRight_RightWithLeft(t *testing.T) {
 	left := createAvlTree_Leaf("left", -5)
 	rightL := createAvlTree_Leaf("rightL", 5)
-	right := createAvlTreeWithHeight("right", 10, 1, rightL, nil)
-	tree := createAvlTreeWithHeight("parent", 0, 2, left, right)
+	right := createAvlTree("right", 10, 1, rightL, nil)
+	tree := createAvlTree("parent", 0, 2, left, right)
 	prevTree := &*tree
 
 	doubleRotateRightToRoot(&tree)
@@ -584,10 +584,10 @@ func testTreeDoubleRotateLeft_LeftWithGrandchildren(t *testing.T) {
 	leftL := createAvlTree_Leaf("LL", -15)
 	leftRL := createAvlTree_Leaf("LRL", -5)
 	leftRR := createAvlTree_Leaf("LRR", -1)
-	leftR := createAvlTreeWithHeight("LR", -3, 1, leftRL, leftRR)
-	left := createAvlTreeWithHeight("L", -10, 2, leftL, leftR)
+	leftR := createAvlTree("LR", -3, 1, leftRL, leftRR)
+	left := createAvlTree("L", -10, 2, leftL, leftR)
 	right := createAvlTree_Leaf("R", 10)
-	tree := createAvlTreeWithHeight("T", 5, 3, left, right)
+	tree := createAvlTree("T", 5, 3, left, right)
 	prevTree := &*tree
 
 	doubleRotateLeftToRoot(&tree)
@@ -610,10 +610,10 @@ func testTreeDoubleRotateRight_RightWithGrandchildren(t *testing.T) {
 	left := createAvlTree_Leaf("L", -5)
 	rightLL := createAvlTree_Leaf("RLL", 1)
 	rightLR := createAvlTree_Leaf("RLR", 5)
-	rightL := createAvlTreeWithHeight("RL", 3, 1, rightLL, rightLR)
+	rightL := createAvlTree("RL", 3, 1, rightLL, rightLR)
 	rightR := createAvlTree_Leaf("RR", 15)
-	right := createAvlTreeWithHeight("R", 10, 2, rightL, rightR)
-	tree := createAvlTreeWithHeight("T", 0, 3, left, right)
+	right := createAvlTree("R", 10, 2, rightL, rightR)
+	tree := createAvlTree("T", 0, 3, left, right)
 	prevTree := &*tree
 
 	doubleRotateRightToRoot(&tree)
@@ -661,13 +661,13 @@ func testTreeBalance_AlreadyBalanced(t *testing.T) {
 	verifyTreeBalanceHasNoEffect(t, leftL)
 
 	leftR := createAvlTree_Leaf("LR", 5)
-	left := createAvlTreeWithHeight("L", 1, 1, leftL, leftR)
+	left := createAvlTree("L", 1, 1, leftL, leftR)
 	verifyTreeBalanceHasNoEffect(t, left)
 
 	rightL := createAvlTree_Leaf("RL", 80)
 	rightR := createAvlTree_Leaf("RR", 100)
-	right := createAvlTreeWithHeight("R", 90, 1, rightL, rightR)
-	tree := createAvlTreeWithHeight("root", 50, 2, left, right)
+	right := createAvlTree("R", 90, 1, rightL, rightR)
+	tree := createAvlTree("root", 50, 2, left, right)
 	verifyTreeBalanceHasNoEffect(t, tree)
 }
 
@@ -681,8 +681,8 @@ func testTreeBalance_Empty(t *testing.T) {
 
 func testTreeBalance_BalancesIn1LftRtt(t *testing.T) {
 	leftL := createAvlTree_Leaf("LL", -3)
-	left := createAvlTreeWithHeight("L", -1, 1, leftL, nil)
-	tree := createAvlTreeWithHeight("root", 2, 2, left, nil)
+	left := createAvlTree("L", -1, 1, leftL, nil)
+	tree := createAvlTree("root", 2, 2, left, nil)
 	prevTree := &*tree
 
 	balance(&tree)
@@ -697,8 +697,8 @@ func testTreeBalance_BalancesIn1LftRtt(t *testing.T) {
 
 func testTreeBalance_BalancesIn1RghtRtt(t *testing.T) {
 	rightR := createAvlTree_Leaf("RR", 3)
-	right := createAvlTreeWithHeight("R", 1, 1, nil, rightR)
-	tree := createAvlTreeWithHeight("root", -1, 2, nil, right)
+	right := createAvlTree("R", 1, 1, nil, rightR)
+	tree := createAvlTree("root", -1, 2, nil, right)
 	prevTree := &*tree
 
 	balance(&tree)
@@ -719,10 +719,10 @@ func testTreeBalance_BalancesIn1DblLftRtt(t *testing.T) {
 	leftL := createAvlTree_Leaf("LL", -15)
 	leftRL := createAvlTree_Leaf("LRL", -5)
 	leftRR := createAvlTree_Leaf("LRR", -1)
-	leftR := createAvlTreeWithHeight("LR", -3, 1, leftRL, leftRR)
-	left := createAvlTreeWithHeight("L", -10, 2, leftL, leftR)
+	leftR := createAvlTree("LR", -3, 1, leftRL, leftRR)
+	left := createAvlTree("L", -10, 2, leftL, leftR)
 	right := createAvlTree_Leaf("R", 10)
-	tree := createAvlTreeWithHeight("T", 5, 3, left, right)
+	tree := createAvlTree("T", 5, 3, left, right)
 	prevTree := &*tree
 
 	balance(&tree)
@@ -745,10 +745,10 @@ func testTreeBalance_BalancesIn1DblRghtRtt(t *testing.T) {
 	left := createAvlTree_Leaf("L", -5)
 	rightLL := createAvlTree_Leaf("RLL", 1)
 	rightLR := createAvlTree_Leaf("RLR", 5)
-	rightL := createAvlTreeWithHeight("RL", 3, 1, rightLL, rightLR)
+	rightL := createAvlTree("RL", 3, 1, rightLL, rightLR)
 	rightR := createAvlTree_Leaf("RR", 15)
-	right := createAvlTreeWithHeight("R", 10, 2, rightL, rightR)
-	tree := createAvlTreeWithHeight("T", 0, 3, left, right)
+	right := createAvlTree("R", 10, 2, rightL, rightR)
+	tree := createAvlTree("T", 0, 3, left, right)
 	prevTree := &*tree
 
 	balance(&tree)
@@ -814,7 +814,7 @@ func testTreeInsert_FirstChild_LowerPriority(t *testing.T) {
 func testTreeInsert_FirstGrandchild_InitBalanced(t *testing.T) {
 	left := createAvlTree_Leaf("left", 2)
 	right := createAvlTree_Leaf("right", 8)
-	tree := createAvlTreeWithHeight("root", 6, 1, left, right)
+	tree := createAvlTree("root", 6, 1, left, right)
 
 	grandchild := createAvlNode("newNode", 7)
 	Insert(&tree, grandchild)
@@ -832,7 +832,7 @@ func testTreeInsert_FirstGrandchild_InitBalanced(t *testing.T) {
 
 func testTreeInsert_LongTailShouldBalance(t *testing.T) {
 	left := createAvlTree_Leaf("left", -5)
-	tree := createAvlTreeWithHeight("root", -1, 1, left, nil)
+	tree := createAvlTree("root", -1, 1, left, nil)
 	prevRoot := &*tree
 	prevLeft := &*tree.left
 
@@ -891,8 +891,8 @@ func testTreeMax_HasRightGrandchildOnLeft(t *testing.T) {
 	rightL := createAvlTree_Leaf("RL", 6)
 	rightData := "R"
 	rightPriority := 7
-	right := createAvlTreeWithHeight(rightData, rightPriority, 1, rightL, nil)
-	tree := createAvlTreeWithHeight("root", 5, 2, left, right)
+	right := createAvlTree(rightData, rightPriority, 1, rightL, nil)
+	tree := createAvlTree("root", 5, 2, left, right)
 
 	max := Max(tree)
 	if max == nil {
@@ -908,8 +908,8 @@ func testTreeMax_HasRightGrandchildOnRight(t *testing.T) {
 	maxData := "RR"
 	maxPriority := 10
 	rightR := createAvlTree_Leaf(maxData, maxPriority)
-	right := createAvlTreeWithHeight("R", 8, 1, rightL, rightR)
-	tree := createAvlTreeWithHeight("root", 5, 2, left, right)
+	right := createAvlTree("R", 8, 1, rightL, rightR)
+	tree := createAvlTree("root", 5, 2, left, right)
 
 	max := Max(tree)
 	if max == nil {
@@ -963,9 +963,9 @@ func testTreeMin_HasLeftGrandchildOnRight(t *testing.T) {
 	leftR := createAvlTree_Leaf("LR", 4)
 	leftData := "L"
 	leftPriority := 3
-	left := createAvlTreeWithHeight(leftData, leftPriority, 1, nil, leftR)
+	left := createAvlTree(leftData, leftPriority, 1, nil, leftR)
 	right := createAvlTree_Leaf("R", 12)
-	tree := createAvlTreeWithHeight("root", 5, 2, left, right)
+	tree := createAvlTree("root", 5, 2, left, right)
 
 	min := Min(tree)
 	if min == nil {
@@ -980,10 +980,10 @@ func testTreeMin_HasLeftGrandchildOnLeft(t *testing.T) {
 	minPriority := 2
 	leftL := createAvlTree_Leaf(minData, minPriority)
 	leftR := createAvlTree_Leaf("LR", 4)
-	left := createAvlTreeWithHeight("L", 3, 1, leftL, leftR)
+	left := createAvlTree("L", 3, 1, leftL, leftR)
 
 	right := createAvlTree_Leaf("R", 9)
-	tree := createAvlTreeWithHeight("root", 5, 2, left, right)
+	tree := createAvlTree("root", 5, 2, left, right)
 
 	min := Min(tree)
 	if min == nil {
@@ -1044,10 +1044,10 @@ func testTreeHas_IsChild(t *testing.T) {
 	leftR := createAvlTree_Leaf("LR", 3)
 	data := "data"
 	priority := 2
-	left := createAvlTreeWithHeight(data, priority, 1, leftL, leftR)
+	left := createAvlTree(data, priority, 1, leftL, leftR)
 	rightL := createAvlTree_Leaf("RL", 14)
-	right := createAvlTreeWithHeight("R", 15, 1, rightL, nil)
-	tree := createAvlTreeWithHeight("root", 10, 2, left, right)
+	right := createAvlTree("R", 15, 1, rightL, nil)
+	tree := createAvlTree("root", 10, 2, left, right)
 
 	searchNode := createAvlNode(data, priority)
 	hasNode := Has(tree, searchNode)
@@ -1062,10 +1062,10 @@ func testTreeHas_IsGrandchild(t *testing.T) {
 	data := "data"
 	priority := 3
 	leftR := createAvlTree_Leaf(data, priority)
-	left := createAvlTreeWithHeight("L", 2, 1, leftL, leftR)
+	left := createAvlTree("L", 2, 1, leftL, leftR)
 	rightL := createAvlTree_Leaf("RL", 14)
-	right := createAvlTreeWithHeight("R", 15, 1, rightL, nil)
-	tree := createAvlTreeWithHeight("root", 10, 2, left, right)
+	right := createAvlTree("R", 15, 1, rightL, nil)
+	tree := createAvlTree("root", 10, 2, left, right)
 
 	searchNode := createAvlNode(data, priority)
 	hasNode := Has(tree, searchNode)
@@ -1079,10 +1079,10 @@ func testTreeHas_PriorityNotInTree(t *testing.T) {
 	leftL := createAvlTree_Leaf("LL", -1)
 	data := "data"
 	leftR := createAvlTree_Leaf(data, 3)
-	left := createAvlTreeWithHeight("L", 2, 1, leftL, leftR)
+	left := createAvlTree("L", 2, 1, leftL, leftR)
 	rightL := createAvlTree_Leaf("RL", 14)
-	right := createAvlTreeWithHeight("R", 15, 1, rightL, nil)
-	tree := createAvlTreeWithHeight("root", 10, 2, left, right)
+	right := createAvlTree("R", 15, 1, rightL, nil)
+	tree := createAvlTree("root", 10, 2, left, right)
 
 	unusedPriority := 4
 	searchNode := createAvlNode(data, unusedPriority)
@@ -1096,11 +1096,11 @@ func testTreeHas_PriorityNotInTree(t *testing.T) {
 func testTreeHas_DataNotInTree(t *testing.T) {
 	leftL := createAvlTree_Leaf("LL", -1)
 	leftR := createAvlTree_Leaf("LR", 3)
-	left := createAvlTreeWithHeight("L", 2, 1, leftL, leftR)
+	left := createAvlTree("L", 2, 1, leftL, leftR)
 	priority := 14
 	rightL := createAvlTree_Leaf("RL", priority)
-	right := createAvlTreeWithHeight("R", 15, 1, rightL, nil)
-	tree := createAvlTreeWithHeight("root", 10, 2, left, right)
+	right := createAvlTree("R", 15, 1, rightL, nil)
+	tree := createAvlTree("root", 10, 2, left, right)
 
 	unusedData := "data"
 	searchNode := createAvlNode(unusedData, priority)
@@ -1148,7 +1148,7 @@ func TestMaxInt(t *testing.T) {
 	testMaxInt_SameVals(t)
 }
 
-func createAvlTreeWithHeight(data string, priority int, height int, left *AvlTree, right *AvlTree) *AvlTree {
+func createAvlTree(data string, priority int, height int, left *AvlTree, right *AvlTree) *AvlTree {
 	tree := NewAvlTree()
 	tree.root = createAvlNode(data, priority)
 	tree.height = height
