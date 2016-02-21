@@ -35,7 +35,7 @@ type AvlTree struct {
 	right  *AvlTree
 }
 
-func newAvlTree() *AvlTree {
+func NewAvlTree() *AvlTree {
 	var tree AvlTree
 	return &tree
 }
@@ -69,7 +69,7 @@ func Max(tree *AvlTree) *AvlNode {
 func getTreePtrForInsert(ptree **AvlTree) *AvlTree {
 	var tree *AvlTree
 	if *ptree == nil {
-		tree = newAvlTree()
+		tree = NewAvlTree()
 	} else {
 		tree = *ptree
 	}

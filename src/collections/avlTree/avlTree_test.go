@@ -87,7 +87,7 @@ func testTreeIsEmpty_EmptyTree(t *testing.T) {
 	var nilTree AvlTree
 	verifyTreeIsEmptyVal(t, &nilTree, expected)
 
-	emptyTree := newAvlTree()
+	emptyTree := NewAvlTree()
 	verifyTreeIsEmptyVal(t, emptyTree, expected)
 }
 
@@ -196,7 +196,7 @@ func testTreeUpdateHeight_EmptyTree(t *testing.T) {
 	var nilTree AvlTree
 	verifyUpdateHeight(t, &nilTree, expectedNewHeight)
 
-	emptyTree := newAvlTree()
+	emptyTree := NewAvlTree()
 	verifyUpdateHeight(t, emptyTree, expectedNewHeight)
 }
 
@@ -267,7 +267,7 @@ func testTreeRotateLeft_EmptyTree(t *testing.T) {
 	var nilTree AvlTree
 	verifyTreeRotateLeft_Empty(t, &nilTree)
 
-	emptyTree := newAvlTree()
+	emptyTree := NewAvlTree()
 	verifyTreeRotateLeft_Empty(t, emptyTree)
 }
 
@@ -277,7 +277,7 @@ func testTreeRotateRight_EmptyTree(t *testing.T) {
 	var nilTree AvlTree
 	verifyTreeRotateRight_Empty(t, &nilTree)
 
-	emptyTree := newAvlTree()
+	emptyTree := NewAvlTree()
 	verifyTreeRotateRight_Empty(t, emptyTree)
 }
 
@@ -469,7 +469,7 @@ func testTreeDoubleRotateLeft_EmptyTree(t *testing.T) {
 	var nilTree AvlTree
 	verifyTreeDoubleRotateLeft_Empty(t, &nilTree)
 
-	emptyTree := newAvlTree()
+	emptyTree := NewAvlTree()
 	verifyTreeDoubleRotateLeft_Empty(t, emptyTree)
 }
 
@@ -479,7 +479,7 @@ func testTreeDoubleRotateRight_EmptyTree(t *testing.T) {
 	var nilTree AvlTree
 	verifyTreeDoubleRotateRight_Empty(t, &nilTree)
 
-	emptyTree := newAvlTree()
+	emptyTree := NewAvlTree()
 	verifyTreeDoubleRotateRight_Empty(t, emptyTree)
 }
 
@@ -662,7 +662,7 @@ func testTreeBalance_Empty(t *testing.T) {
 	var nilTree AvlTree
 	verifyTreeBalanceHasNoEffect(t, &nilTree)
 
-	emptyTree := newAvlTree()
+	emptyTree := NewAvlTree()
 	verifyTreeBalanceHasNoEffect(t, emptyTree)
 }
 
@@ -849,21 +849,21 @@ func testTreeMax_NilTree(t *testing.T) {
 }
 
 func testTreeMax_EmptyTree(t *testing.T) {
-	emptyTree := newAvlTree()
+	emptyTree := NewAvlTree()
 	max := Max(emptyTree)
 	verifyNodePointersEqual(t, max, nil)
 }
 
 func testTreeMax_SingleElement(t *testing.T) {
 	node := createAvlNode("data", 6)
-	tree := newAvlTree()
+	tree := NewAvlTree()
 	Insert(&tree, node)
 	max := Max(tree)
 	verifyNodePointersEqual(t, max, node)
 }
 
 func testTreeMax_NoRightNodes(t *testing.T) {
-	tree := newAvlTree()
+	tree := NewAvlTree()
 	rootNode := createAvlNode("root", -6)
 	leftNode := createAvlNode("left", -9)
 	Insert(&tree, rootNode)
@@ -942,7 +942,7 @@ func TestMaxInt(t *testing.T) {
 }
 
 func createAvlTree(rootNode *AvlNode, left *AvlTree, right *AvlTree) *AvlTree {
-	tree := newAvlTree()
+	tree := NewAvlTree()
 	tree.root = rootNode
 	tree.left = left
 	tree.right = right
