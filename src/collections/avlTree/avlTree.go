@@ -42,38 +42,55 @@ func newAvlTree() *AvlTree {
 	return &tree
 }
 
-func (tree *AvlTree) Insert(node *avlNode) {
-	if node == nil {
+func Insert(ptree **AvlTree, node *avlNode) {
+	if ptree == nil || node == nil {
 		return
 	}
-	if tree == nil {
-		tree = newAvlTree()
-	}
+	tree := getTreePtrForInsert(ptree)
 	if tree.root == nil {
 		tree.root = node
 		tree.height = 0
 	} else {
-		tree.insertInChild(node)
-		tree.updateHeightAndBalance()
+		insertInChild(tree, node)
+		updateHeightAndBalance(&tree)
 	}
+	*ptree = tree
 }
 
-func (tree *AvlTree) insertInChild(node *avlNode) {
+func getTreePtrForInsert(ptree **AvlTree) *AvlTree {
+	var tree *AvlTree
+	if *ptree == nil {
+		tree = newAvlTree()
+	} else {
+		tree = *ptree
+	}
+	return tree
+}
+
+func insertInChild(tree *AvlTree, node *avlNode) {
+	if tree == nil {
+		return
+	}
 	rootToNodeCompare := tree.root.compare(node)
 	if rootToNodeCompare >= 0 {
-		tree.left.Insert(node)
+		Insert(&tree.left, node)
 	} else {
-		tree.right.Insert(node)
+		Insert(&tree.right, node)
 	}
 }
 
-func (tree *AvlTree) updateHeightAndBalance() {
+func updateHeightAndBalance(ptree **AvlTree) {
+	if ptree == nil || *ptree == nil {
+		return
+	}
+	tree := *ptree
 	prevHeight := tree.getHeight()
 	tree.updateHeight()
 	newHeight := tree.getHeight()
 	if newHeight != prevHeight {
 		balance(&tree)
 	}
+	*ptree = tree
 }
 
 //Updates height of tree based on heights of children
