@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func verifyCompareVal(t *testing.T, node *avlNode, other *avlNode, expectedVal int) {
+func verifyCompareVal(t *testing.T, node *AvlNode, other *AvlNode, expectedVal int) {
 	compareVal := node.compare(other)
 	if compareVal != expectedVal {
 		t.Errorf("%v.compare(%v) == %d, expected %d", *node, *other, compareVal, expectedVal)
@@ -15,49 +15,49 @@ func verifyCompareVal(t *testing.T, node *avlNode, other *avlNode, expectedVal i
 }
 
 func testNodeCompare_OtherIsNil(t *testing.T) {
-	var nilNode avlNode
-	node := avlNode{"A", 5}
+	var nilNode AvlNode
+	node := AvlNode{"A", 5}
 	expectedCompareResult := 1
 	verifyCompareVal(t, &node, &nilNode, expectedCompareResult)
 }
 
 func testNodeCompare_SameNode(t *testing.T) {
-	node := avlNode{"A", 5}
+	node := AvlNode{"A", 5}
 	expectedCompareResult := 0
 	verifyCompareVal(t, &node, &node, expectedCompareResult)
 }
 
 func testNodeCompare_OtherIsEquivalent(t *testing.T) {
-	node := avlNode{"A", 5}
-	equivNode := avlNode{"A", 5}
+	node := AvlNode{"A", 5}
+	equivNode := AvlNode{"A", 5}
 	expectedCompareResult := 0
 	verifyCompareVal(t, &node, &equivNode, expectedCompareResult)
 }
 
 func testNodeCompare_OtherHasLowerPriority(t *testing.T) {
-	node := avlNode{"A", 5}
-	lowerPriorityNode := avlNode{"B", 3}
+	node := AvlNode{"A", 5}
+	lowerPriorityNode := AvlNode{"B", 3}
 	expectedCompareResult := 1
 	verifyCompareVal(t, &node, &lowerPriorityNode, expectedCompareResult)
 }
 
 func testNodeCompare_OtherHasHigherPriority(t *testing.T) {
-	node := avlNode{"A", 5}
-	higherPriorityNode := avlNode{"B", 8}
+	node := AvlNode{"A", 5}
+	higherPriorityNode := AvlNode{"B", 8}
 	expectedCompareResult := -1
 	verifyCompareVal(t, &node, &higherPriorityNode, expectedCompareResult)
 }
 
 func testNodeCompare_OtherHasSamePriorityLowerData(t *testing.T) {
-	node := avlNode{"ABC", 5}
-	other := avlNode{"AAA", 5}
+	node := AvlNode{"ABC", 5}
+	other := AvlNode{"AAA", 5}
 	expectedCompareResult := 1
 	verifyCompareVal(t, &node, &other, expectedCompareResult)
 }
 
 func testNodeCompare_OtherHasSamePriorityHigherData(t *testing.T) {
-	node := avlNode{"AAA", 5}
-	other := avlNode{"ABC", 5}
+	node := AvlNode{"AAA", 5}
+	other := AvlNode{"ABC", 5}
 	expectedCompareResult := -1
 	verifyCompareVal(t, &node, &other, expectedCompareResult)
 }
@@ -760,7 +760,7 @@ func TestTreeBalance(t *testing.T) {
 	testTreeBalance_BalancesIn1DblRghtRtt(t)
 }
 
-func verifyNodePointersEqual(t *testing.T, node *avlNode, expected *avlNode) {
+func verifyNodePointersEqual(t *testing.T, node *AvlNode, expected *AvlNode) {
 	if node != expected {
 		t.Errorf("node == %v, expected %v", node, expected)
 		debug.PrintStack()
@@ -941,7 +941,7 @@ func TestMaxInt(t *testing.T) {
 	testMaxInt_SameVals(t)
 }
 
-func createAvlTree(rootNode *avlNode, left *AvlTree, right *AvlTree) *AvlTree {
+func createAvlTree(rootNode *AvlNode, left *AvlTree, right *AvlTree) *AvlTree {
 	tree := newAvlTree()
 	tree.root = rootNode
 	tree.left = left
@@ -961,6 +961,6 @@ func createAvlTree_Leaf(data string, priority int) *AvlTree {
 	return createAvlTree(node, nil, nil)
 }
 
-func createAvlNode(data string, priority int) *avlNode {
-	return &avlNode{data, priority}
+func createAvlNode(data string, priority int) *AvlNode {
+	return &AvlNode{data, priority}
 }

@@ -4,12 +4,12 @@ import (
 	"fmt"
 )
 
-type avlNode struct {
+type AvlNode struct {
 	data     string
 	priority int
 }
 
-func (node *avlNode) compare(other *avlNode) int {
+func (node *AvlNode) compare(other *AvlNode) int {
 	if node == other {
 		return 0
 	}
@@ -29,7 +29,7 @@ func (node *avlNode) compare(other *avlNode) int {
 }
 
 type AvlTree struct {
-	root   *avlNode
+	root   *AvlNode
 	height int
 	left   *AvlTree
 	right  *AvlTree
@@ -40,7 +40,7 @@ func newAvlTree() *AvlTree {
 	return &tree
 }
 
-func Insert(ptree **AvlTree, node *avlNode) {
+func Insert(ptree **AvlTree, node *AvlNode) {
 	if ptree == nil || node == nil {
 		return
 	}
@@ -56,7 +56,7 @@ func Insert(ptree **AvlTree, node *avlNode) {
 }
 
 //Returns max element in AVL Tree
-func Max(tree *AvlTree) *avlNode {
+func Max(tree *AvlTree) *AvlNode {
 	if tree == nil || tree.root == nil {
 		return nil
 	}
@@ -76,7 +76,7 @@ func getTreePtrForInsert(ptree **AvlTree) *AvlTree {
 	return tree
 }
 
-func insertInChild(tree *AvlTree, node *avlNode) {
+func insertInChild(tree *AvlTree, node *AvlNode) {
 	if tree == nil {
 		return
 	}
