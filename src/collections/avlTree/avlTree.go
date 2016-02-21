@@ -109,7 +109,7 @@ func (tree *AvlTree) calcHeightFromChildren() int {
 	}
 	leftHeight := tree.left.getHeight()
 	rightHeight := tree.right.getHeight()
-	maxChildHeight := max(leftHeight, rightHeight)
+	maxChildHeight := maxInt(leftHeight, rightHeight)
 	return maxChildHeight + 1
 }
 
@@ -228,7 +228,7 @@ func debug_printTree(tree *AvlTree, prefix string) {
 }
 
 //Return max of two ints
-func max(first int, second int) int {
+func maxInt(first int, second int) int {
 	if first > second {
 		return first
 	}

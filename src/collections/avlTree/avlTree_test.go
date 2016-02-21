@@ -842,30 +842,30 @@ func TestTreeInsert(t *testing.T) {
 	testTreeInsert_LongTailShouldBalance(t)
 }
 
-func testMax_DiffVals(t *testing.T) {
+func testMaxInt_DiffVals(t *testing.T) {
 	lower := -1
 	higher := 0
-	maxVal := max(lower, higher)
+	maxVal := maxInt(lower, higher)
 	if maxVal != higher {
-		t.Errorf("max(%d, %d) == %d, expected %d", lower, higher, maxVal, higher)
+		t.Errorf("maxInt(%d, %d) == %d, expected %d", lower, higher, maxVal, higher)
 	}
-	maxVal = max(higher, lower)
+	maxVal = maxInt(higher, lower)
 	if maxVal != higher {
-		t.Errorf("max(%d, %d) == %d, expected %d", higher, lower, maxVal, higher)
+		t.Errorf("maxInt(%d, %d) == %d, expected %d", higher, lower, maxVal, higher)
 	}
 }
 
-func testMax_SameVals(t *testing.T) {
+func testMaxInt_SameVals(t *testing.T) {
 	val := 3
-	maxVal := max(val, val)
+	maxVal := maxInt(val, val)
 	if maxVal != val {
-		t.Errorf("max(%d,%d) == %d, expected %d", val, val, maxVal, val)
+		t.Errorf("maxInt(%d,%d) == %d, expected %d", val, val, maxVal, val)
 	}
 }
 
-func TestMax(t *testing.T) {
-	testMax_DiffVals(t)
-	testMax_SameVals(t)
+func TestMaxInt(t *testing.T) {
+	testMaxInt_DiffVals(t)
+	testMaxInt_SameVals(t)
 }
 
 func createAvlTree(rootNode *avlNode, left *AvlTree, right *AvlTree) *AvlTree {
