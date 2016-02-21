@@ -786,7 +786,7 @@ func testTreeInsert_EmptyTree(t *testing.T) {
 }
 
 func testTreeInsert_FirstChild_LowerPriority(t *testing.T) {
-	tree := createAvlTree_Leaf("rootTESTING", 2)
+	tree := createAvlTree_Leaf("root", 2)
 	newMinNode := createAvlNode("min", -1)
 	Insert(&tree, newMinNode)
 
@@ -817,11 +817,29 @@ func testTreeInsert_FirstGrandchild_InitBalanced(t *testing.T) {
 	}
 }
 
+func testTreeInsert_LongTailShouldBalance(t *testing.T) {
+	left := createAvlTree_Leaf("left", -5)
+	tree := createAvlTreeWithHeight("root", -1, 1, left, nil)
+	prevRoot := &*tree
+	prevLeft := &*tree.left
+
+	minNode := createAvlNode("min", -7)
+	Insert(&tree, minNode)
+
+	verifyNodePointersEqual(t, tree.root, prevLeft.root)
+	verifyNodePointersEqual(t, tree.left.root, minNode)
+	verifyNodePointersEqual(t, tree.right.root, prevRoot.root)
+	verifyGetHeightVal(t, tree, 1)
+	verifyGetHeightVal(t, tree.left, 0)
+	verifyGetHeightVal(t, tree.right, 0)
+}
+
 func TestTreeInsert(t *testing.T) {
 	testTreeInsert_NilTree(t)
 	testTreeInsert_EmptyTree(t)
 	testTreeInsert_FirstChild_LowerPriority(t)
 	testTreeInsert_FirstGrandchild_InitBalanced(t)
+	testTreeInsert_LongTailShouldBalance(t)
 }
 
 func testMax_DiffVals(t *testing.T) {
