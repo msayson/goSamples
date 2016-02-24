@@ -99,33 +99,6 @@ func RemoveMax(ptree **AvlTree) {
 	*ptree = tree
 }
 
-//Requires that tree.left is non-nil
-func replaceWithLeftMax(tree *AvlTree) {
-	tree.root = Max(tree.left)
-	removeMaxFromSubtree(&tree.left)
-	tree.updateHeight()
-}
-
-func removeLastNode(tree *AvlTree) {
-	tree.root = nil
-	tree.height = -1
-}
-
-//Remove max from non-root branch
-func removeMaxFromSubtree(ptree **AvlTree) {
-	if ptree == nil || *ptree == nil {
-		return
-	}
-	tree := *ptree
-	if tree.right == nil {
-		tree = tree.left
-	} else {
-		removeMaxFromSubtree(&tree.right)
-		tree.updateHeight()
-	}
-	*ptree = tree
-}
-
 //Returns max element in AVL tree
 func Max(tree *AvlTree) *AvlNode {
 	if tree == nil || tree.root == nil {
@@ -229,6 +202,33 @@ func removeFromSubtree(ptree **AvlTree, node *AvlNode) {
 		tree.updateHeight()
 	}
 	*ptree = tree
+}
+
+//Remove max from non-root branch
+func removeMaxFromSubtree(ptree **AvlTree) {
+	if ptree == nil || *ptree == nil {
+		return
+	}
+	tree := *ptree
+	if tree.right == nil {
+		tree = tree.left
+	} else {
+		removeMaxFromSubtree(&tree.right)
+		tree.updateHeight()
+	}
+	*ptree = tree
+}
+
+//Requires that tree.left is non-nil
+func replaceWithLeftMax(tree *AvlTree) {
+	tree.root = Max(tree.left)
+	removeMaxFromSubtree(&tree.left)
+	tree.updateHeight()
+}
+
+func removeLastNode(tree *AvlTree) {
+	tree.root = nil
+	tree.height = -1
 }
 
 //Updates height of tree based on heights of children
