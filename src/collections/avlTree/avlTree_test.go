@@ -763,6 +763,42 @@ func testTreeBalance_BalancesIn1DblRghtRtt(t *testing.T) {
 	verifyGetHeightVal(t, right, 1)
 }
 
+func testTreeBalance_NoLeft_RightGrandchildren(t *testing.T) {
+	rightL := createAvlTree_Leaf("RL", 5)
+	rightR := createAvlTree_Leaf("RR", 15)
+	right := createAvlTree("R", 10, 1, rightL, rightR)
+	tree := createAvlTree("root", 0, 2, nil, right)
+	prevTree := &*tree
+	balance(&tree)
+
+	if tree != right {
+		t.Errorf("tree == %v, expected %v", tree, right)
+	} else {
+		verifyTreeLAndR(t, tree, prevTree, rightR)
+		verifyTreeLAndR(t, prevTree, nil, rightL)
+		verifyGetHeightVal(t, tree, 2)
+		verifyGetHeightVal(t, prevTree, 1)
+	}
+}
+
+func testTreeBalance_NoRight_LeftGrandchildren(t *testing.T) {
+	leftL := createAvlTree_Leaf("LL", -15)
+	leftR := createAvlTree_Leaf("LR", -5)
+	left := createAvlTree("L", -10, 1, leftL, leftR)
+	tree := createAvlTree("root", 0, 2, left, nil)
+	prevTree := &*tree
+	balance(&tree)
+
+	if tree != left {
+		t.Errorf("tree == %v, expected %v", tree, left)
+	} else {
+		verifyTreeLAndR(t, tree, leftL, prevTree)
+		verifyTreeLAndR(t, prevTree, leftR, nil)
+		verifyGetHeightVal(t, tree, 2)
+		verifyGetHeightVal(t, prevTree, 1)
+	}
+}
+
 func TestTreeBalance(t *testing.T) {
 	testTreeBalance_Nil(t)
 	testTreeBalance_Empty(t)
@@ -771,6 +807,8 @@ func TestTreeBalance(t *testing.T) {
 	testTreeBalance_BalancesIn1RghtRtt(t)
 	testTreeBalance_BalancesIn1DblLftRtt(t)
 	testTreeBalance_BalancesIn1DblRghtRtt(t)
+	testTreeBalance_NoLeft_RightGrandchildren(t)
+	testTreeBalance_NoRight_LeftGrandchildren(t)
 }
 
 func verifyNodePointersEqual(t *testing.T, node *AvlNode, expected *AvlNode) {
@@ -853,6 +891,224 @@ func TestTreeInsert(t *testing.T) {
 	testTreeInsert_FirstChild_LowerPriority(t)
 	testTreeInsert_FirstGrandchild_InitBalanced(t)
 	testTreeInsert_LongTailShouldBalance(t)
+}
+
+func testTreeRemoveMax_EmptyTree(t *testing.T) {
+	var tree AvlTree
+	treePtr := &tree
+	RemoveMax(&treePtr)
+
+	if !treePtr.isEmpty() {
+		t.Errorf("tree.isEmpty() == true, expected false. tree.root == %v", tree.root)
+	} else {
+		verifyGetHeightVal(t, treePtr, -1)
+	}
+}
+
+func testTreeRemoveMax_NilNode(t *testing.T) {
+	tree := NewAvlTree()
+	rootNode := createAvlNode("a", 1)
+	Insert(&tree, rootNode)
+
+	prevTree := &*tree
+	var nilNode *AvlNode = nil
+	Remove(&tree, nilNode)
+
+	verifyTreePointersEqual(t, tree, prevTree)
+	verifyNodePointersEqual(t, tree.root, rootNode)
+	verifyGetHeightVal(t, tree, 0)
+}
+
+func testTreeRemoveMax_OnlyNode(t *testing.T) {
+	tree := createAvlTree_Leaf("a", 1)
+	RemoveMax(&tree)
+	if tree.root != nil {
+		t.Errorf("tree.root == %v, expected nil", tree.root)
+	}
+	expectedHeight := -1
+	if tree.height != expectedHeight {
+		t.Errorf("tree.height == %d, expected %d", tree.height, expectedHeight)
+	}
+}
+
+func testTreeRemoveMax_NoRight(t *testing.T) {
+	left := createAvlTree_Leaf("left", 1)
+	tree := createAvlTree("root", 5, 1, left, nil)
+
+	RemoveMax(&tree)
+	verifyNodePointersEqual(t, tree.root, left.root)
+	verifyTreeLAndR(t, tree, nil, nil)
+	verifyGetHeightVal(t, tree, 0)
+}
+
+func testTreeRemoveMax_HasRight(t *testing.T) {
+	leftL := createAvlTree_Leaf("LL", -10)
+	left := createAvlTree("L", -5, 1, leftL, nil)
+	rightL := createAvlTree_Leaf("RL", 5)
+	prevRLRoot := &*rightL.root
+	right := createAvlTree("R", 10, 1, rightL, nil)
+	tree := createAvlTree("root", 0, 2, left, right)
+
+	RemoveMax(&tree)
+	verifyNodePointersEqual(t, tree.right.root, prevRLRoot)
+	verifyTreeLAndR(t, tree, left, rightL)
+	verifyTreeLAndR(t, tree.left, leftL, nil)
+	verifyTreeLAndR(t, tree.right, nil, nil)
+}
+
+func TestTreeRemoveMax(t *testing.T) {
+	testTreeRemoveMax_EmptyTree(t)
+	testTreeRemoveMax_NilNode(t)
+	testTreeRemoveMax_OnlyNode(t)
+	testTreeRemoveMax_NoRight(t)
+	testTreeRemoveMax_HasRight(t)
+}
+
+func testTreeRemove_NilTree(t *testing.T) {
+	var nilTree *AvlTree = nil
+	node := createAvlNode("a", 1)
+	Remove(&nilTree, node)
+	if nilTree != nil {
+		t.Errorf("tree == %v, expected nil", nilTree)
+	}
+}
+
+func testTreeRemove_EmptyTree(t *testing.T) {
+	var tree AvlTree
+	treePtr := &tree
+	node := createAvlNode("a", 1)
+	Remove(&treePtr, node)
+
+	if !treePtr.isEmpty() {
+		t.Errorf("tree.isEmpty() == true, expected false")
+	} else {
+		verifyGetHeightVal(t, treePtr, -1)
+	}
+}
+
+func testTreeRemove_NilNode(t *testing.T) {
+	tree := NewAvlTree()
+	rootNode := createAvlNode("a", 1)
+	Insert(&tree, rootNode)
+
+	prevTree := &*tree
+	var nilNode *AvlNode = nil
+	Remove(&tree, nilNode)
+
+	verifyTreePointersEqual(t, tree, prevTree)
+	verifyNodePointersEqual(t, tree.root, rootNode)
+	verifyGetHeightVal(t, tree, 0)
+}
+
+func testTreeRemove_OnlyNode(t *testing.T) {
+	tree := NewAvlTree()
+	rootNode := createAvlNode("a", 1)
+	Insert(&tree, rootNode)
+
+	Remove(&tree, rootNode)
+	if tree.root != nil {
+		t.Errorf("tree.root == %v, expected nil", tree.root)
+	}
+	expectedHeight := -1
+	if tree.height != expectedHeight {
+		t.Errorf("tree.height == %d, expected %d", tree.height, expectedHeight)
+	}
+}
+
+func testTreeRemove_Leaf_RightChild(t *testing.T) {
+	left := createAvlTree_Leaf("left", 1)
+	rightData := "right"
+	rightPriority := 4
+	right := createAvlTree_Leaf(rightData, rightPriority)
+	tree := createAvlTree("root", 3, 1, left, right)
+
+	nodeToRemove := createAvlNode(rightData, rightPriority)
+	Remove(&tree, nodeToRemove)
+	verifyTreeLAndR(t, tree, left, nil)
+	verifyGetHeightVal(t, tree, 1)
+}
+
+func testTreeRemove_Leaf_LeftGrandchild(t *testing.T) {
+	leftL := createAvlTree_Leaf("LL", -17)
+	data := "LR"
+	priority := -3
+	leftR := createAvlTree_Leaf(data, priority)
+	left := createAvlTree("left", -5, 1, leftL, leftR)
+	right := createAvlTree_Leaf("right", 4)
+	tree := createAvlTree("root", 3, 2, left, right)
+
+	nodeToRemove := createAvlNode(data, priority)
+	Remove(&tree, nodeToRemove)
+	verifyTreeLAndR(t, tree, left, right)
+	verifyTreeLAndR(t, left, leftL, nil)
+	verifyTreeLAndR(t, right, nil, nil)
+	verifyGetHeightVal(t, tree, 2)
+	verifyGetHeightVal(t, left, 1)
+}
+
+func testTreeRemove_Leaf_RequiringRebalance(t *testing.T) {
+	data := "left"
+	priority := -5
+	left := createAvlTree_Leaf(data, priority)
+	rightL := createAvlTree_Leaf("RL", 15)
+	rightR := createAvlTree_Leaf("RR", 25)
+	right := createAvlTree("right", 20, 1, rightL, rightR)
+	prevRightNode := &*right.root
+	tree := createAvlTree("root", 10, 2, left, right)
+	prevTree := &*tree
+
+	nodeToRemove := createAvlNode(data, priority)
+	Remove(&tree, nodeToRemove)
+	verifyNodePointersEqual(t, tree.root, prevRightNode)
+	verifyTreeLAndR(t, tree, prevTree, rightR)
+	verifyTreeLAndR(t, prevTree, nil, rightL)
+	verifyGetHeightVal(t, tree, 2)
+	verifyGetHeightVal(t, prevTree, 1)
+}
+
+func testTreeRemove_Root_NoLeft(t *testing.T) {
+	right := createAvlTree_Leaf("right", 50)
+	data := "root"
+	priority := 3
+	tree := createAvlTree(data, priority, 1, nil, right)
+
+	nodeToRemove := createAvlNode(data, priority)
+	Remove(&tree, nodeToRemove)
+	verifyTreePointersEqual(t, tree, right)
+	verifyTreeLAndR(t, tree, nil, nil)
+	verifyGetHeightVal(t, tree, 0)
+}
+
+func testTreeRemove_RootWithLeftBranch(t *testing.T) {
+	leftL := createAvlTree_Leaf("LL", -17)
+	leftR := createAvlTree_Leaf("LR", -3)
+	prevLeftRNode := &*leftR.root
+	left := createAvlTree("left", -5, 1, leftL, leftR)
+	right := createAvlTree_Leaf("right", 4)
+	data := "root"
+	priority := 3
+	tree := createAvlTree(data, priority, 2, left, right)
+
+	nodeToRemove := createAvlNode(data, priority)
+	Remove(&tree, nodeToRemove)
+	verifyNodePointersEqual(t, tree.root, prevLeftRNode)
+	verifyTreeLAndR(t, tree, left, right)
+	verifyTreeLAndR(t, left, leftL, nil)
+	verifyTreeLAndR(t, right, nil, nil)
+	verifyGetHeightVal(t, tree, 2)
+	verifyGetHeightVal(t, left, 1)
+}
+
+func TestTreeRemove(t *testing.T) {
+	testTreeRemove_NilTree(t)
+	testTreeRemove_EmptyTree(t)
+	testTreeRemove_NilNode(t)
+	testTreeRemove_OnlyNode(t)
+	testTreeRemove_Leaf_RightChild(t)
+	testTreeRemove_Leaf_LeftGrandchild(t)
+	testTreeRemove_Leaf_RequiringRebalance(t)
+	testTreeRemove_Root_NoLeft(t)
+	testTreeRemove_RootWithLeftBranch(t)
 }
 
 func testTreeMax_NilTree(t *testing.T) {

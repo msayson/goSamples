@@ -43,7 +43,6 @@ func NewAvlTree() *AvlTree {
 }
 
 //Inserts node into *ptree and rebalances the tree
-//Returns immediately if *ptree or node is nil
 func Insert(ptree **AvlTree, node *AvlNode) {
 	if ptree == nil || node == nil {
 		return
@@ -54,7 +53,75 @@ func Insert(ptree **AvlTree, node *AvlNode) {
 		tree.height = 0
 	} else {
 		insertInChild(tree, node)
-		updateHeightAndBalance(&tree)
+		tree.updateHeight()
+		balance(&tree)
+	}
+	*ptree = tree
+}
+
+//Removes node from *ptree and rebalances the tree
+func Remove(ptree **AvlTree, node *AvlNode) {
+	if ptree == nil || (*ptree).isEmpty() || node == nil {
+		return
+	}
+	tree := *ptree
+	rootToNodeComparison := tree.root.compare(node)
+	if rootToNodeComparison == 0 {
+		if tree.left != nil {
+			replaceWithLeftMax(tree)
+		} else if tree.right != nil {
+			tree = tree.right
+		} else {
+			removeLastNode(tree)
+		}
+	} else {
+		removeFromChild(tree, node, rootToNodeComparison)
+		tree.updateHeight()
+	}
+	balance(&tree)
+	*ptree = tree
+}
+
+func RemoveMax(ptree **AvlTree) {
+	if ptree == nil || *ptree == nil {
+		return
+	}
+	tree := *ptree
+	if tree.right != nil {
+		removeMaxFromSubtree(&tree.right)
+		tree.updateHeight()
+		balance(&tree)
+	} else if tree.left != nil {
+		replaceWithLeftMax(tree)
+	} else {
+		removeLastNode(tree)
+	}
+	*ptree = tree
+}
+
+//Requires that tree.left is non-nil
+func replaceWithLeftMax(tree *AvlTree) {
+	tree.root = Max(tree.left)
+	removeMaxFromSubtree(&tree.left)
+	tree.updateHeight()
+}
+
+func removeLastNode(tree *AvlTree) {
+	tree.root = nil
+	tree.height = -1
+}
+
+//Remove max from non-root branch
+func removeMaxFromSubtree(ptree **AvlTree) {
+	if ptree == nil || *ptree == nil {
+		return
+	}
+	tree := *ptree
+	if tree.right == nil {
+		tree = tree.left
+	} else {
+		removeMaxFromSubtree(&tree.right)
+		tree.updateHeight()
 	}
 	*ptree = tree
 }
@@ -84,6 +151,12 @@ func Min(tree *AvlTree) *AvlNode {
 //Returns true iff tree contains node
 func Has(tree *AvlTree, node *AvlNode) bool {
 	return findSubtreeWithNodeAsRoot(tree, node) != nil
+}
+
+//Replaces specified node in tree with newNode
+func UpdateNode(tree *AvlTree, node *AvlNode, newNode *AvlNode) {
+	Remove(&tree, node)
+	Insert(&tree, newNode)
 }
 
 func findSubtreeWithNodeAsRoot(tree *AvlTree, node *AvlNode) *AvlTree {
@@ -122,16 +195,38 @@ func insertInChild(tree *AvlTree, node *AvlNode) {
 	}
 }
 
-func updateHeightAndBalance(ptree **AvlTree) {
+//Removes node from appropriate child branch
+func removeFromChild(tree *AvlTree, node *AvlNode, rootToNodeComparison int) {
+	if tree == nil {
+		return
+	}
+	if rootToNodeComparison < 0 {
+		removeFromSubtree(&tree.right, node)
+	} else {
+		removeFromSubtree(&tree.left, node)
+	}
+}
+
+//Removes non-root node from *ptree and rebalances the tree
+func removeFromSubtree(ptree **AvlTree, node *AvlNode) {
 	if ptree == nil || *ptree == nil {
 		return
 	}
 	tree := *ptree
-	prevHeight := tree.getHeight()
-	tree.updateHeight()
-	newHeight := tree.getHeight()
-	if newHeight != prevHeight {
-		balance(&tree)
+	rootToNodeComparison := tree.root.compare(node)
+	if rootToNodeComparison == 0 {
+		if tree.left != nil {
+			tree.root = Max(tree.left)
+			removeMaxFromSubtree(&tree.left)
+			tree.updateHeight()
+		} else if tree.right != nil {
+			tree = tree.right
+		} else {
+			tree = nil
+		}
+	} else {
+		removeFromChild(tree, node, rootToNodeComparison)
+		tree.updateHeight()
 	}
 	*ptree = tree
 }
@@ -172,13 +267,13 @@ func balance(ptree **AvlTree) {
 	balance(&tree.right)
 	currBalance := tree.left.getHeight() - tree.right.getHeight()
 	if currBalance > 1 {
-		if tree.left.left.getHeight() > tree.left.right.getHeight() {
+		if tree.left.left.getHeight() >= tree.left.right.getHeight() {
 			rotateLeftToRoot(&tree)
 		} else {
 			doubleRotateLeftToRoot(&tree)
 		}
 	} else if currBalance < -1 {
-		if tree.right.right.getHeight() > tree.right.left.getHeight() {
+		if tree.right.right.getHeight() >= tree.right.left.getHeight() {
 			rotateRightToRoot(&tree)
 		} else {
 			doubleRotateRightToRoot(&tree)
